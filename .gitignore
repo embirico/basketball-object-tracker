@@ -1,3 +1,8 @@
+# Data
+videos/*
+images/*
+
+# Python
 *.py[cod]
 
 # C extensions
@@ -35,4 +40,5 @@ nosetests.xml
 .project
 .pydevproject
 
-videos/*
+# Mac
+*.DS_Store
