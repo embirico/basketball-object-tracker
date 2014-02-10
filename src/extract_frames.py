@@ -29,13 +29,13 @@ def convert_timestring_to_msec(string):
 def extract_frames(args):
 	# Open video file and print stats
 	cap = cv2.VideoCapture(args.input_file)
+	frame_count = int(cap.get(cv2.cv.CV_CAP_PROP_FRAME_COUNT))
 	if args.verbose:
 		print 'Filename: ' + args.input_file
 		print 'Open success?: ' + str(cap.isOpened())
 		print 'Frame width: %d' % cap.get(cv2.cv.CV_CAP_PROP_FRAME_WIDTH)
 		print 'Frame height: %d' % cap.get(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT)
 		print 'FPS: ' + str(cap.get(cv2.cv.CV_CAP_PROP_FPS))
-		frame_count = int(cap.get(cv2.cv.CV_CAP_PROP_FRAME_COUNT))
 		print 'Frame count: %d' % frame_count
 
 	# Get length in msec of movie, then reset
