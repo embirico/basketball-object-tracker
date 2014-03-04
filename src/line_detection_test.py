@@ -4,9 +4,10 @@ import numpy as np
 
 show = False
 
-imgName = '5993'
+imgName = '/home/gabe/cs231/5993'
 
 for i in range(0,10):
+# for i in [1]:
 	img = cv2.imread(imgName + '.jpg')
 	gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
 	edges = cv2.Canny(gray,20 * i,255,apertureSize = 3)
@@ -25,6 +26,9 @@ for i in range(0,10):
 	    cv2.line(img,(x1,y1),(x2,y2),(0,0,255),2)
 
 	cv2.imwrite(imgName + '_low_' + str(i*20) + '.jpg',img)
+
+	# Look at the edges
+	# cv2.imwrite(imgName + 'edges.jpg', edges)
 
 if show:
 	imgNew = LoadImage(imgName + '_Processed.jpg')
