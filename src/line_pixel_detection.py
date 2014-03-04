@@ -15,10 +15,11 @@ def convertToYCrCb(imageName):
 
 	hist = cv2.calcHist([img], [1,2], None, [256,256], [0,256, 0,256]);
 	plt.imshow(hist, interpolation = 'nearest')
+	plt.show()
 
-	cv2.imshow('bitch',newImg)
-	if cv2.waitKey(0) & 0xff == 27:
-		cv2.destroyAllWindows()
+	# cv2.imshow('bitch',img)
+	# if cv2.waitKey(0) & 0xff == 27:
+	# 	cv2.destroyAllWindows()
 
 def oneDimHists(imageName):
 	img = cv2.imread(imageName)
