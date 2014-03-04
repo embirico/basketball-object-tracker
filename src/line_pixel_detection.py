@@ -7,15 +7,17 @@
 
 import cv2
 import numpy as np
+from matplotlib import pyplot as plt
 
 
 
 
 def convertToYCrCb(imageName):
 	img = cv2.imread(imageName)
-	newImg = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-	# newImg = cv2.cvtColor(img,cv2.COLOR_RGB2YCR_CB)
-	# gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+	img = cv2.cvtColor(img,cv2.COLOR_BGR2YCR_CB)
+
+	hist = cv2.calcHist([img], [1,2], None, [256,256], [0,256, 0,256]);
+	plt.imshow(hist, interpolation = 'nearest')
 
 	cv2.imshow('bitch',newImg)
 	if cv2.waitKey(0) & 0xff == 27:
