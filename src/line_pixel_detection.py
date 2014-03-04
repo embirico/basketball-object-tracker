@@ -32,9 +32,9 @@ def getColorPeaks(imageName):
 	print "{} counts similar to {}".format(sum2, peak2_idx)
 
 	# Show histograms
-	plt.imshow(hist,interpolation = 'nearest')
-	plt.imshow(subtracted_hist,interpolation = 'nearest')
-	plt.show()
+	# plt.imshow(hist,interpolation = 'nearest')
+	# plt.imshow(subtracted_hist,interpolation = 'nearest')
+	# plt.show()
 
 
 # BTW etc is the total count and the 'subtracted new histogram'
