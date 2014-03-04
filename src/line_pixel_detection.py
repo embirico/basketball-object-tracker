@@ -12,7 +12,7 @@ from matplotlib import pyplot as plt
 
 from collections import deque
 
-def getColorPeaks(image_name):
+def get_dominant_colorset(image_name, thresh=0.4, peak_num=0):
 	img = cv2.cvtColor(cv2.imread(image_name), cv2.COLOR_BGR2YCR_CB)
 
 	hist = cv2.calcHist([img], [1,2], None, [256,256], [0,256, 0,256])
@@ -20,28 +20,17 @@ def getColorPeaks(image_name):
 	peak1_flat_idx = np.argmax(hist)
 	peak1_idx = np.unravel_index(peak1_flat_idx, hist.shape)
 	peak1_val = hist[peak1_idx]
-	connected_hist1, sum1, subtracted_hist = get_connected_hist(hist, peak1_idx)
+	connected_hist1, sum1, subtracted_hist = get_connected_hist(hist, peak1_idx, thresh)
 
 	peak2_flat_idx = np.argmax(subtracted_hist)
 	peak2_idx = np.unravel_index(peak2_flat_idx, subtracted_hist.shape)
-	peak2_val = subtracted_hist[peak2_idx]
-	connected_hist2, sum2, _ = get_connected_hist(subtracted_hist, peak2_idx)
+	peak2_val = hist[peak2_idx]
+	connected_hist2, sum2, subtracted_hist = get_connected_hist(subtracted_hist, peak2_idx, thresh)
 
-	print "{} counts similar to {}".format(sum1, peak1_idx)
-	print "{} counts similar to {}".format(sum2, peak2_idx)
-
-	# show_hist([hist, subtracted_hist, _])
-
-	# if False:#sum1 >= sum2:
-	# 	return connected_hist1
-	# else:
-	# 	return connected_hist2
-
-	return connected_hist1 | connected_hist2
+	return [connected_hist1, connected_hist2][peak_num]
 
 
-# BTW etc is the total count and the 'subtracted new histogram'
-def get_connected_hist(hist, peak_idx, thresh=.05):
+def get_connected_hist(hist, peak_idx, thresh):
 	connected_hist = set()
 	sum_val = 0
 	subtracted_hist = np.copy(hist)
@@ -65,39 +54,13 @@ def get_connected_hist(hist, peak_idx, thresh=.05):
 			toAdd.append((x, y+1))
 
 		for idx in toAdd:
-			if idx in connected_hist and hist[idx] >= min_passing_val:
+			if idx not in connected_hist and hist[idx] >= min_passing_val:
 				connected_hist.add(idx)
 				sum_val += hist[idx]
 				subtracted_hist[idx] = 0
 				queue.append(idx)
 
 	return connected_hist, sum_val, subtracted_hist
-
-
-def oneDimHists(imageName):
-	img = cv2.imread(imageName)
-	newImg = cv2.cvtColor(img,cv2.COLOR_BGR2YCR_CB)
-	# newImg = cv2.cvtColor(img,cv2.COLOR_RGB2YCR_CB)
-	# gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-	h = np.zeros((300,256,3))
-	bins = np.arange(256).reshape(256,1)
-	color = [ (255,0,0),(0,255,0),(0,0,255) ]
-
-	y, cr, cb = newImg[:,:,0].copy(), newImg[:,:,1].copy(), newImg[:,:,2].copy()
-	for item,col in enumerate(color):
-	    hist_item = cv2.calcHist([newImg],[item],None,[256],[0,255])
-	    cv2.normalize(hist_item,hist_item,0,255,cv2.NORM_MINMAX)
-	    hist=np.int32(np.around(hist_item))
-	    pts = np.column_stack((bins,hist))
-	    cv2.polylines(h,[pts],False,col)
-
-	h=np.flipud(h)
-
-	cv2.imshow('colorhist',h)
-	cv2.waitKey(0)
-	# cv2.imshow('bitch',newImg)
-	# if cv2.waitKey(0) & 0xff == 27:
-	# 	cv2.destroyAllWindows()
 
 
 def show_image(img):
@@ -122,10 +85,15 @@ def create_court_mask(image_name, dominant_colorset):
 			if (cr, cb) not in dominant_colorset:
 				img[idx] = (0,128,128)
 
-	show_image(cv2.cvtColor(img, cv2.COLOR_YCR_CB2BGR))
+	return img
 
 
 if __name__ == '__main__':
-	image_name = 'images/5993.jpg'
-	dominant_colorset = getColorPeaks(image_name)
-	create_court_mask(image_name, dominant_colorset)
+	image_root = 'images/6175'
+	image_ext = '.jpg'
+	image_name = image_root + image_ext
+	for thresh in np.linspace(0.01, 0.05, 5):
+		dominant_colorset = get_dominant_colorset(image_name, thresh, 1)
+		img = create_court_mask(image_name, dominant_colorset)
+		cv2.imwrite(image_root + '_masked_' + str(thresh) + image_ext,
+			cv2.cvtColor(img, cv2.COLOR_YCR_CB2BGR))
