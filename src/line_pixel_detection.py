@@ -15,6 +15,7 @@ from collections import deque
 def getColorPeaks(imageName):
 	img = cv2.imread(imageName)
 	img = cv2.cvtColor(img,cv2.COLOR_BGR2YCR_CB)
+
 	hist = cv2.calcHist([img], [1,2], None, [256,256], [0,256, 0,256])
 
 	peak1_flat_idx = np.argmax(hist)
@@ -29,6 +30,11 @@ def getColorPeaks(imageName):
 
 	print "{} counts similar to {}".format(sum1, peak1_idx)
 	print "{} counts similar to {}".format(sum2, peak2_idx)
+
+	print img
+	print hist[(128,128)]
+	print peak1_val
+	print peak1_idx
 	# subtract
 
 	# do it again
@@ -41,25 +47,29 @@ def get_connected_hist(hist, peak_idx, thresh=.05):
 	subtracted_hist = np.copy(hist)
 
 	min_passing_val = thresh * hist[peak_idx]
+
+	connected_hist[peak_idx] = 1
+	sum_val	+= hist[peak_idx]
+	subtracted_hist[peak_idx] = 0
 	queue = deque([peak_idx])
 	while queue:
 		x, y = queue.popleft()
 		toAdd = []
-		if x >= 1:
+		if x > 1:
 			toAdd.append((x-1, y))
-		if x < hist.shape[0]:
+		if x < hist.shape[0] - 1:
 			toAdd.append((x+1, y))
-		if y >= 1:
+		if y > 1:
 			toAdd.append((x, y-1))
-		if y < hist.shape[1]:
+		if y < hist.shape[1] - 1:
 			toAdd.append((x, y+1))
 
 		for idx in toAdd:
 			if not connected_hist[idx] and hist[idx] >= min_passing_val:
-				queue.append(idx)
 				connected_hist[idx] = 1
 				sum_val += hist[idx]
 				subtracted_hist[idx] = 0
+				queue.append(idx)
 
 	return connected_hist, sum_val, subtracted_hist
 
@@ -90,8 +100,11 @@ def oneDimHists(imageName):
 	# if cv2.waitKey(0) & 0xff == 27:
 	# 	cv2.destroyAllWindows()
 
-
+def show_image(img):
+	cv2.imshow('Showing image',img)
+	if cv2.waitKey(0) & 0xff == 27:
+		cv2.destroyAllWindows()
 
 if __name__ == '__main__':
-	imageName = 'images/5993.jpg'
+	imageName = 'images/test.jpg'
 	getColorPeaks(imageName)
