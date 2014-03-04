@@ -31,12 +31,6 @@ def getColorPeaks(imageName):
 	print "{} counts similar to {}".format(sum1, peak1_idx)
 	print "{} counts similar to {}".format(sum2, peak2_idx)
 
-	print img
-	print hist[(128,128)]
-	print peak1_val
-	print peak1_idx
-	# subtract
-
 	# do it again
 
 
@@ -106,5 +100,5 @@ def show_image(img):
 		cv2.destroyAllWindows()
 
 if __name__ == '__main__':
-	imageName = 'images/test.jpg'
+	imageName = 'images/5993.jpg'
 	getColorPeaks(imageName)
