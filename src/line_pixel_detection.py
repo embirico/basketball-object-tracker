@@ -5,21 +5,65 @@
 # Then, find features from line interections
 # Then compute optimal H
 
+import cv
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt
 
-def convertToYCrCb(imageName):
+from collections import deque
+
+def getColorPeaks(imageName):
 	img = cv2.imread(imageName)
 	img = cv2.cvtColor(img,cv2.COLOR_BGR2YCR_CB)
+	hist = cv2.calcHist([img], [1,2], None, [256,256], [0,256, 0,256])
 
-	hist = cv2.calcHist([img], [1,2], None, [256,256], [0,256, 0,256]);
-	plt.imshow(hist, interpolation = 'nearest')
-	plt.show()
+	peak1_flat_idx = np.argmax(hist)
+	peak1_idx = np.unravel_index(peak1_flat_idx, hist.shape)
+	peak1_val = hist[peak1_idx]
+	connected_hist1, sum1, subtracted_hist = get_connected_hist(hist, peak1_idx)
 
-	# cv2.imshow('bitch',img)
-	# if cv2.waitKey(0) & 0xff == 27:
-	# 	cv2.destroyAllWindows()
+	peak2_flat_idx = np.argmax(subtracted_hist)
+	peak2_idx = np.unravel_index(peak2_flat_idx, subtracted_hist.shape)
+	peak2_val = subtracted_hist[peak2_idx]
+	connected_hist2, sum2, _ = get_connected_hist(subtracted_hist, peak2_idx)
+
+	print "{} counts similar to {}".format(sum1, peak1_idx)
+	print "{} counts similar to {}".format(sum2, peak2_idx)
+	# subtract
+
+	# do it again
+
+
+# BTW etc is the total count and the 'subtracted new histogram'
+def get_connected_hist(hist, peak_idx, thresh=.05):
+	connected_hist = np.zeros(hist.shape)
+	sum_val = 0
+	subtracted_hist = np.copy(hist)
+
+	min_passing_val = thresh * hist[peak_idx]
+	queue = deque([peak_idx])
+	while queue:
+		x, y = queue.popleft()
+		toAdd = []
+		if x >= 1:
+			toAdd.append((x-1, y))
+		if x < hist.shape[0]:
+			toAdd.append((x+1, y))
+		if y >= 1:
+			toAdd.append((x, y-1))
+		if y < hist.shape[1]:
+			toAdd.append((x, y+1))
+
+		for idx in toAdd:
+			if not connected_hist[idx] and hist[idx] >= min_passing_val:
+				queue.append(idx)
+				connected_hist[idx] = 1
+				sum_val += hist[idx]
+				subtracted_hist[idx] = 0
+
+	return connected_hist, sum_val, subtracted_hist
+
+
 
 def oneDimHists(imageName):
 	img = cv2.imread(imageName)
@@ -50,4 +94,4 @@ def oneDimHists(imageName):
 
 if __name__ == '__main__':
 	imageName = 'images/5993.jpg'
-	convertToYCrCb(imageName)
+	getColorPeaks(imageName)
