@@ -31,10 +31,7 @@ def getColorPeaks(imageName):
 	print "{} counts similar to {}".format(sum1, peak1_idx)
 	print "{} counts similar to {}".format(sum2, peak2_idx)
 
-	# Show histograms
-	plt.imshow(hist,interpolation = 'nearest')
-	plt.imshow(subtracted_hist,interpolation = 'nearest')
-	plt.show()
+	show_hist([hist, subtracted_hist, _])
 
 
 # BTW etc is the total count and the 'subtracted new histogram'
@@ -97,10 +94,19 @@ def oneDimHists(imageName):
 	# if cv2.waitKey(0) & 0xff == 27:
 	# 	cv2.destroyAllWindows()
 
+
 def show_image(img):
 	cv2.imshow('Showing image',img)
 	if cv2.waitKey(0) & 0xff == 27:
 		cv2.destroyAllWindows()
+
+
+def show_hist(hist_list):
+	for i, hist in enumerate(hist_list):
+		plt.subplot(1, len(hist_list), i+1)
+		plt.imshow(hist, interpolation = 'nearest')
+	plt.show()
+
 
 if __name__ == '__main__':
 	imageName = 'images/5993.jpg'
