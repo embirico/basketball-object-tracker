@@ -9,6 +9,7 @@ import cv
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt
+from random import sample
 
 from collections import deque
 
@@ -25,7 +26,7 @@ def get_dominant_colorset(image_name, thresh=0.4, peak_num=0):
 	peak2_flat_idx = np.argmax(subtracted_hist)
 	peak2_idx = np.unravel_index(peak2_flat_idx, subtracted_hist.shape)
 	peak2_val = hist[peak2_idx]
-	connected_hist2, sum2, subtracted_hist = get_connected_hist(subtracted_hist, peak2_idx, thresh)
+	connected_hist2, sum2, subtrac#choose set_size number of pointsted_hist = get_connected_hist(subtracted_hist, peak2_idx, thresh)
 
 	return [connected_hist1, connected_hist2][peak_num]
 
@@ -87,13 +88,42 @@ def create_court_mask(image_name, dominant_colorset):
 
 	return img
 
+def find_top_boundary(court_mask):
+	top_line_set = set()
+	for col in xrange(img.shape[1]):
+		for row in xrange(img.shape[0]):
+			if court_mask[row][col] != (0,128,128):
+				top_line_set.append((row,col))
+				break
+
+	# RANSAC (projection threshold ~0.5 of horizontal baseline)
+	best_top_line = ransac_find_top_line(top_line_set)
+
+def ransac_find_top_line(top_line_set):
+	num_cols = len(top_line_set)
+	iterations = 50
+	th_cover = 0.5
+	set_size = 5
+	best_line = 0
+	best_top_line = 0
+
+	for i in range(0,iterations):
+		#choose set_size number of points
+		random_choices = sample(xrange(num_cols), set_size)
+		sample_inliers = np.array([random_choices[j] for j in range(0,num_cols)])
+
+		#Fit line
+
+		#Use line on other data, if pass threshold, then compare against best line
+
 
 if __name__ == '__main__':
-	image_root = 'images/6175'
+	image_root = 'images/5993'
 	image_ext = '.jpg'
 	image_name = image_root + image_ext
 	for thresh in np.linspace(0.01, 0.05, 5):
 		dominant_colorset = get_dominant_colorset(image_name, thresh, 1)
-		img = create_court_mask(image_name, dominant_colorset)
+		court_mask = create_court_mask(image_name, dominant_colorset)
+		# top_line = find_top_boundary(court_mask)
 		cv2.imwrite(image_root + '_masked_' + str(thresh) + image_ext,
-			cv2.cvtColor(img, cv2.COLOR_YCR_CB2BGR))
+			cv2.cvtColor(court_mask, cv2.COLOR_YCR_CB2BGR))
