@@ -26,7 +26,7 @@ def get_dominant_colorset(image_name, thresh=0.4, peak_num=0):
 	peak2_flat_idx = np.argmax(subtracted_hist)
 	peak2_idx = np.unravel_index(peak2_flat_idx, subtracted_hist.shape)
 	peak2_val = hist[peak2_idx]
-	connected_hist2, sum2, subtrac#choose set_size number of pointsted_hist = get_connected_hist(subtracted_hist, peak2_idx, thresh)
+	connected_hist2, sum2, subtracted_hist = get_connected_hist(subtracted_hist, peak2_idx, thresh)
 
 	return [connected_hist1, connected_hist2][peak_num]
 
@@ -89,15 +89,53 @@ def create_court_mask(image_name, dominant_colorset):
 	return img
 
 def find_top_boundary(court_mask):
-	top_line_set = set()
-	for col in xrange(img.shape[1]):
-		for row in xrange(img.shape[0]):
-			if court_mask[row][col] != (0,128,128):
-				top_line_set.append((row,col))
-				break
+	# top_line_set = set()
+	# for col in xrange(img.shape[1]):
+	# 	for row in xrange(img.shape[0]):
+	# 		if court_mask[row][col] != (0,128,128):
+	# 			top_line_set.append((row,col))
+	# 			break
 
+	# # RANSAC (projection threshold ~0.5 of horizontal baseline)
+	# best_top_line = find_top_line(top_line_set)
+	top_line_only = np.copy(court_mask)
+	for col in xrange(court_mask.shape[1]):
+		top_found = False
+		for row in xrange(court_mask.shape[0]):
+			if top_found:
+				top_line_only[row][col] = (0,128,128)
+			else:
+				if not np.array_equal(top_line_only[row][col], np.array([0,128,128])):
+					top_found = True
+
+	# Hough transform to find top boundary (doesn't work that well)
+	# best_top_line = hough_find_top_line(top_line_only)
 	# RANSAC (projection threshold ~0.5 of horizontal baseline)
-	best_top_line = ransac_find_top_line(top_line_set)
+	best_top_line = ransac_find_top_line(top_line_only)
+
+def hough_find_top_line(top_line_only):
+	# Finding the best threshold for Hough
+	for i in range(1460,1467):
+		top_line_copy = np.copy(top_line_only)
+		gray = cv2.cvtColor(top_line_copy,cv2.COLOR_BGR2GRAY)	
+		lines = cv2.HoughLines(gray,1,np.pi/180,i)
+
+		count = 0
+		for rho,theta in lines[0]:
+			count += 1
+			a = np.cos(theta)
+			b = np.sin(theta)
+			x0 = a*rho
+			y0 = b*rho
+			x1 = int(x0 + 1000*(-b))
+			y1 = int(y0 + 1000*(a))
+			x2 = int(x0 - 1000*(-b))
+			y2 = int(y0 - 1000*(a))
+
+			cv2.line(top_line_copy,(x1,y1),(x2,y2),(82,240,90),2)
+
+		print 'The number of lines with threshold at %d is %d' %(i, count)
+		cv2.imwrite('images/test' + str(i) + '.jpg', cv2.cvtColor(top_line_copy, cv2.COLOR_YCR_CB2BGR))
 
 def ransac_find_top_line(top_line_set):
 	num_cols = len(top_line_set)
@@ -121,9 +159,14 @@ if __name__ == '__main__':
 	image_root = 'images/5993'
 	image_ext = '.jpg'
 	image_name = image_root + image_ext
-	for thresh in np.linspace(0.01, 0.05, 5):
-		dominant_colorset = get_dominant_colorset(image_name, thresh, 1)
-		court_mask = create_court_mask(image_name, dominant_colorset)
-		# top_line = find_top_boundary(court_mask)
-		cv2.imwrite(image_root + '_masked_' + str(thresh) + image_ext,
-			cv2.cvtColor(court_mask, cv2.COLOR_YCR_CB2BGR))
+
+	# Testing thres
+	# for thresh in np.linspace(0.01, 0.05, 5):
+	# 	dominant_colorset = get_dominant_colorset(image_name, thresh, 1)
+	# 	court_mask = create_court_mask(image_name, dominant_colorset)
+	# 	cv2.imwrite(image_root + '_masked_' + str(thresh) + image_ext,
+	# 		cv2.cvtColor(court_mask, cv2.COLOR_YCR_CB2BGR))
+
+	dominant_colorset = get_dominant_colorset(image_name, 0.02, 1)
+	court_mask = create_court_mask(image_name, dominant_colorset)
+	find_top_boundary(court_mask)
