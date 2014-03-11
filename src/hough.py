@@ -12,8 +12,33 @@ def fill_holes_with_contour_filling(gray):
   filled = gray.copy()
   contour, _ = cv2.findContours(filled,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
   for cnt in contour:
-    cv2.drawContours(gray, [cnt], 0, 255, -1)
+    cv2.drawContours(filled, [cnt], 0, 255, -1)
   return filled
+
+
+def put_lines_on_img(bgr_img, lines_rho_theta):
+  for rho, theta in lines_rho_theta:
+    a = np.cos(theta)
+    b = np.sin(theta)
+    x0 = a*rho
+    y0 = b*rho
+    x1 = int(x0 + 1000*(-b))
+    y1 = int(y0 + 1000*(a))
+    x2 = int(x0 - 1000*(-b))
+    y2 = int(y0 - 1000*(a))
+    cv2.line(bgr_img,(x1,y1),(x2,y2),(0,0,255),2)
+
+
+def get_lines(gray, thesh):
+  # thresh = 50
+  canny = cv2.Canny(gray.copy(), 50, 200)
+  lines = cv2.HoughLines(canny, 1, np.pi/180, thresh)
+  bgr = colors.gray_to_bgr(gray)
+  if lines is not None:
+    put_lines_on_img(bgr, lines[0])
+  return bgr
+  # call canny
+  # call hough
 
 
 if __name__ == '__main__':
@@ -21,14 +46,21 @@ if __name__ == '__main__':
   image_root = 'images/5993'
   image_ext = '.jpg'
   image_name = image_root + image_ext
+
   court_mask = colors.create_court_mask(image_name, binary_gray=True)
   cv2.imwrite('images/mask.jpg', court_mask)
   flooded = fill_holes_with_contour_filling(court_mask)
-  cv2.imwrite('images/mask_flooded3.jpg', flooded)
+  cv2.imwrite('images/mask_flooded.jpg', flooded)
+  for thresh in xrange(30, 80, 5):
+    with_lines = get_lines(flooded, thresh)
+    cv2.imwrite('images/mask_lined{}.jpg'.format(thresh), with_lines)
+
   # court_mask = colors.ycbcr_to_binary(court_mask)
   # plt.imshow(court_mask)
   # plt.show()
   # edge = cv2.Canny(gray, thrs1, thrs2, apertureSize=5)
+
+
 
 
 # Unused code kept for the report etc -----------
