@@ -28,7 +28,7 @@ def create_court_mask(image_name, dominant_colorset=None, binary=False):
 			elif binary:
 				img[idx] = (255,128,128)
 
-	return img
+	return ycbcr_to_binary(img) if binary else img
 
 
 def get_dominant_colorset(image_name, thresh=0.02, ignore_crowd=True):
@@ -102,15 +102,16 @@ def ycbcr_to_bgr(img):
 
 
 def ycbcr_to_gray(img):
-	img = cv2.cvtColor(img, cv2.COLOR_YCR_CB2BGR)
+	img = ycbcr_to_bgr(img)
 	return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
 
 def ycbcr_to_binary(img):
 	return ycbcr_to_gray(img) > 128
 
+
 def show_binary(binary):
-	plt.imshow(court_mask)
+	plt.imshow(binary)
 	plt.show()
 
 if __name__ == '__main__':
@@ -119,8 +120,4 @@ if __name__ == '__main__':
 	image_ext = '.jpg'
 	image_name = image_root + image_ext
 
-	dominant_colorset = get_dominant_colorset(image_name, thresh=0.02,
-		ignore_crowd=True)
-	court_mask = create_court_mask(image_name, dominant_colorset)
-	cv2.imwrite(image_root + '_masked_' + str(0.02) + image_ext,
-		cv2.cvtColor(court_mask, cv2.COLOR_YCR_CB2BGR))
+	show_binary(create_court_mask(image_name, binary=True))
