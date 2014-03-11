@@ -109,13 +109,13 @@ def find_top_boundary(court_mask):
 					top_found = True
 
 	# Hough transform to find top boundary (doesn't work that well)
-	# best_top_line = hough_find_top_line(top_line_only)
+	best_top_line = hough_find_top_line(top_line_only)
 	# RANSAC (projection threshold ~0.5 of horizontal baseline)
-	best_top_line = ransac_find_top_line(top_line_only)
+	# best_top_line = ransac_find_top_line(top_line_only)
 
 def hough_find_top_line(top_line_only):
 	# Finding the best threshold for Hough
-	for i in range(1460,1467):
+	for i in range(1450,1460):
 		top_line_copy = np.copy(top_line_only)
 		gray = cv2.cvtColor(top_line_copy,cv2.COLOR_BGR2GRAY)	
 		lines = cv2.HoughLines(gray,1,np.pi/180,i)
@@ -137,11 +137,11 @@ def hough_find_top_line(top_line_only):
 		print 'The number of lines with threshold at %d is %d' %(i, count)
 		cv2.imwrite('images/test' + str(i) + '.jpg', cv2.cvtColor(top_line_copy, cv2.COLOR_YCR_CB2BGR))
 
+# As described in Farin 2005
 def ransac_find_top_line(top_line_set):
 	num_cols = len(top_line_set)
-	iterations = 50
+	iterations = 25
 	th_cover = 0.5
-	set_size = 5
 	best_line = 0
 	best_top_line = 0
 
