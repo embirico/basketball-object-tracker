@@ -72,7 +72,7 @@ def hough_find_top_line(top_line_only):
 		x0_baseline = a*rho_baseline
 		y0_baseline = b*rho_baseline
 
-		
+
 
 	else:
 		print 'no intersection'
