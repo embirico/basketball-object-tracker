@@ -25,7 +25,7 @@ def create_court_mask(image_name, dominant_colorset=None, binary_gray=False):
 			_, cr, cb = img[idx]
 			if (cr, cb) not in dominant_colorset:
 				img[idx] = (0,128,128)
-			elif binary:
+			elif binary_gray:
 				img[idx] = (255,128,128)
 
 	return ycbcr_to_gray(img) if binary_gray else img
@@ -115,7 +115,7 @@ def binary_to_gray(img):
 
 
 def gray_to_bgr(img):
-	cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+	return cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
 
 def show_binary(binary):
 	plt.imshow(binary)
@@ -127,6 +127,5 @@ if __name__ == '__main__':
 	image_ext = '.jpg'
 	image_name = image_root + image_ext
 
-	img = create_court_mask(image_name, binary=True)
-	print gray_to_bgr(binary_to_gray(img))
-	# show_image(gray_to_bgr(binary_to_gray(img)))
+	img = create_court_mask(image_name, binary_gray=True)
+	show_image(gray_to_bgr(img))
