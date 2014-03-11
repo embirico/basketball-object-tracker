@@ -14,7 +14,7 @@ CROWD_HEIGHT_FRACTION = .375;
 
 # Exported code ---------------------------------
 
-def create_court_mask(image_name, dominant_colorset=None, binary=False):
+def create_court_mask(image_name, dominant_colorset=None, binary_gray=False):
 	if dominant_colorset is None:
 		dominant_colorset = get_dominant_colorset(image_name)
 
@@ -28,7 +28,7 @@ def create_court_mask(image_name, dominant_colorset=None, binary=False):
 			elif binary:
 				img[idx] = (255,128,128)
 
-	return ycbcr_to_binary(img) if binary else img
+	return ycbcr_to_gray(img) if binary_gray else img
 
 
 def get_dominant_colorset(image_name, thresh=0.02, ignore_crowd=True):
@@ -110,6 +110,13 @@ def ycbcr_to_binary(img):
 	return ycbcr_to_gray(img) > 128
 
 
+def binary_to_gray(img):
+	return img * 255;
+
+
+def gray_to_bgr(img):
+	cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+
 def show_binary(binary):
 	plt.imshow(binary)
 	plt.show()
@@ -120,4 +127,6 @@ if __name__ == '__main__':
 	image_ext = '.jpg'
 	image_name = image_root + image_ext
 
-	show_binary(create_court_mask(image_name, binary=True))
+	img = create_court_mask(image_name, binary=True)
+	print gray_to_bgr(binary_to_gray(img))
+	# show_image(gray_to_bgr(binary_to_gray(img)))
