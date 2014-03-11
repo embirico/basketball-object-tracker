@@ -14,7 +14,7 @@ CROWD_HEIGHT_FRACTION = .375;
 
 # Exported code ---------------------------------
 
-def create_court_mask(image_name, dominant_colorset=None):
+def create_court_mask(image_name, dominant_colorset=None, binary=False):
 	if dominant_colorset is None:
 		dominant_colorset = get_dominant_colorset(image_name)
 
@@ -25,11 +25,13 @@ def create_court_mask(image_name, dominant_colorset=None):
 			_, cr, cb = img[idx]
 			if (cr, cb) not in dominant_colorset:
 				img[idx] = (0,128,128)
+			elif binary:
+				img[idx] = (255,128,128)
 
 	return img
 
 
-def get_dominant_colorset(image_name, thresh=0.4, ignore_crowd=True):
+def get_dominant_colorset(image_name, thresh=0.02, ignore_crowd=True):
 	img = cv2.cvtColor(cv2.imread(image_name), cv2.COLOR_BGR2YCR_CB)
 
 	if ignore_crowd:
@@ -94,6 +96,22 @@ def show_hist(hist_list):
 		plt.imshow(hist, interpolation = 'nearest')
 	plt.show()
 
+
+def ycbcr_to_bgr(img):
+	return cv2.cvtColor(img, cv2.COLOR_YCR_CB2BGR)
+
+
+def ycbcr_to_gray(img):
+	img = cv2.cvtColor(img, cv2.COLOR_YCR_CB2BGR)
+	return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+
+def ycbcr_to_binary(img):
+	return ycbcr_to_gray(img) > 128
+
+def show_binary(binary):
+	plt.imshow(court_mask)
+	plt.show()
 
 if __name__ == '__main__':
 	# image_root = 'images/6175'
