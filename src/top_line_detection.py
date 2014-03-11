@@ -2,6 +2,9 @@ import cv
 import cv2
 import numpy as np
 
+import line_pixel_detection as lpd
+import colors
+
 def hough_find_top_line(top_line_only):
 	# Finding the best threshold for Hough
 
@@ -73,3 +76,19 @@ def hough_find_top_line(top_line_only):
 
 	else:
 		print 'no intersection'
+
+
+def confirm_hough_lines_sorted(top_line_only):
+	lines_at_60 = cv2.HoughLines(top_line,5,np.pi/180 * 3,60)[0]
+
+	thresh = 80
+	prevLines = None
+	while True:
+		lines = cv2.HoughLines(top_line,5,np.pi/180 * 3,thresh)
+		if lines is None:
+			break
+		prevLines = lines[0]
+		thresh += 1
+
+	for i in xrange(len(prevLines)):
+		print 'Lines are the same', lines_at_60[i] == prevLines[i]
