@@ -12,8 +12,14 @@ def fill_holes_with_contour_filling(gray):
   filled = gray.copy()
   contour, _ = cv2.findContours(filled,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
   for cnt in contour:
-    cv2.drawContours(gray, [cnt], 0, 255, -1)
+    cv2.drawContours(filled, [cnt], 0, 255, -1)
   return filled
+
+
+def get_lines(gray):
+  pass
+  # call canny
+  # call hough
 
 
 if __name__ == '__main__':
