@@ -95,7 +95,7 @@ def find_top_boundary(court_mask):
 	best_top_line = hough_find_top_line(top_line_only)
 
 if __name__ == '__main__':
-	image_root = 'images/6175'
+	image_root = 'images/5993'
 	image_ext = '.jpg'
 	image_name = image_root + image_ext
 
