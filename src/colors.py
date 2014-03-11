@@ -9,7 +9,9 @@ from collections import deque
 
 # Constants -------------------------------------
 
-CROWD_HEIGHT_FRACTION = .375;
+CROWD_TOP_HEIGHT_FRACTION = .375;
+CROWD_BOTTOM_HEIGHT_FRACTION = .2;
+BGR_BLACK = (0,0,0)
 
 
 # Exported code ---------------------------------
@@ -31,11 +33,12 @@ def create_court_mask(image_name, dominant_colorset=None, binary_gray=False):
 	return ycbcr_to_gray(img) if binary_gray else img
 
 
-def get_dominant_colorset(image_name, thresh=0.02, ignore_crowd=True):
+def get_dominant_colorset(image_name, thresh=0.02, ignore_crowd=True,
+	peak_num=1):
 	img = cv2.cvtColor(cv2.imread(image_name), cv2.COLOR_BGR2YCR_CB)
 
 	if ignore_crowd:
-		img = img[CROWD_HEIGHT_FRACTION*img.shape[0] : -1]
+		img = img[CROWD_TOP_HEIGHT_FRACTION*img.shape[0] : -CROWD_BOTTOM_HEIGHT_FRACTION*img.shape[0]]
 
 	hist = cv2.calcHist([img], [1,2], None, [256,256], [0,256, 0,256])
 
@@ -44,7 +47,42 @@ def get_dominant_colorset(image_name, thresh=0.02, ignore_crowd=True):
 	peak1_val = hist[peak1_idx]
 	connected_hist1, sum1, subtracted_hist = get_connected_hist(hist, peak1_idx, thresh)
 
-	return connected_hist1
+	if peak_num == 1:
+		return connected_hist1
+
+	peak2_flat_idx = np.argmax(subtracted_hist)
+	peak2_idx = np.unravel_index(peak2_flat_idx, subtracted_hist.shape)
+	peak2_val = hist[peak2_idx]
+	connected_hist2, sum2, subtracted_hist = get_connected_hist(subtracted_hist, peak2_idx, thresh)
+
+	return connected_hist2
+
+
+
+def get_paint_mask(image_name):
+	court_colorset = get_dominant_colorset(image_name)
+	court_mask = create_court_mask(image_name, court_colorset, binary_gray=True)
+	court_mask = fill_holes_with_contour_filling(court_mask)
+
+	court_masked = cv2.imread(image_name)
+	for row in xrange(court_masked.shape[0]):
+		for col in xrange(court_masked.shape[1]):
+			if court_mask[row][col]:
+				court_masked[row][col] = BGR_BLACK
+
+	show_image(court_masked)
+
+
+def fill_holes_with_contour_filling(gray, inverse=False):
+  filled = gray.copy()
+  if inverse:
+  	filled = cv2.bitwise_not(filled)
+  contour, _ = cv2.findContours(filled,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
+  for cnt in contour:
+    cv2.drawContours(filled, [cnt], 0, 255, -1)
+  if inverse:
+  	filled = cv2.bitwise_not(filled)
+  return filled
 
 
 # Non-exported code -----------------------------
@@ -127,5 +165,4 @@ if __name__ == '__main__':
 	image_ext = '.jpg'
 	image_name = image_root + image_ext
 
-	img = create_court_mask(image_name, binary_gray=True)
-	show_image(gray_to_bgr(img))
+	img = get_paint_mask(image_name)
