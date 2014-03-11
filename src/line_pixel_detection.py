@@ -77,33 +77,13 @@ def show_hist(hist_list):
 		plt.imshow(hist, interpolation = 'nearest')
 	plt.show()
 
-def get_top_pixels(court_mask):
-	top_pixels = np.copy(court_mask)
-	# print 'Num columns is %s' %(court_mask.shape[1])
-	# print 'Num rows is %s' %(court_mask.shape[0])
-	for col in xrange(court_mask.shape[1]):
-		top_found = False
-		for row in xrange(court_mask.shape[0]):
-			if top_found:
-				top_pixels[row][col] = 0
-			else:
-				if top_pixels[row][col]:
-					# print "Row is %s, column is %s, binary value is %s" %(row, col, top_line_only[row][col])
-					top_found = True
-	return top_pixels
-
-def find_top_boundary(court_mask):
-	top_line_only = get_top_pixels(court_mask)
-	# Hough transform to find top boundary (doesn't work that well)
-	best_top_line = hough_find_top_line(top_line_only)
-
 if __name__ == '__main__':
 	image_root = 'images/5993'
 	image_ext = '.jpg'
 	image_name = image_root + image_ext
 
 	# Testing thres
-	# for thresh in np.linspace(0.01, 0.05, 5):
+	# for thresh in np.linspacecreate_court_mask(0.01, 0.05, 5):
 	# 	dominant_colorset = get_dominant_colorset(image_name, thresh, 1)
 	# 	court_mask = create_court_mask(image_name, dominant_colorset)
 	# 	cv2.imwrite(image_root + '_masked_' + str(thresh) + image_ext,

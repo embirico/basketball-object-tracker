@@ -6,6 +6,25 @@ import line_pixel_detection as lpd
 import colors
 from find_intersection_hough_lines import *
 
+def find_top_boundary(court_mask):
+	top_line_only = get_top_pixels(court_mask)
+	best_top_line = hough_find_top_line(top_line_only)
+
+def get_top_pixels(court_mask):
+	top_pixels = np.copy(court_mask)
+	# print 'Num columns is %s' %(court_mask.shape[1])
+	# print 'Num rows is %s' %(court_mask.shape[0])
+	for col in xrange(court_mask.shape[1]):
+		top_found = False
+		for row in xrange(court_mask.shape[0]):
+			if top_found:
+				top_pixels[row][col] = 0
+			else:
+				if top_pixels[row][col]:
+					# print "Row is %s, column is %s, binary value is %s" %(row, col, top_line_only[row][col])
+					top_found = True
+	return top_pixels
+
 def hough_find_top_line(top_line_only):
 	# Finding the best threshold for Hough
 
