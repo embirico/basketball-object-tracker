@@ -30,7 +30,7 @@ def hough_find_top_line(top_line_only):
 		cv2.imwrite('images/test_binary_5993_' + str(i) + '.jpg', top_line_copy)
 
 
-def test(top_line_only):
+def confirm_hough_lines_sorted(top_line_only):
 	lines_at_60 = cv2.HoughLines(top_line,5,np.pi/180 * 3,60)[0]
 
 	thresh = 80
