@@ -9,7 +9,8 @@ import cv
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt
-from random import sample
+from top_line_detection import *
+from colors import *
 
 from collections import deque
 
@@ -76,87 +77,25 @@ def show_hist(hist_list):
 		plt.imshow(hist, interpolation = 'nearest')
 	plt.show()
 
-
-def create_court_mask(image_name, dominant_colorset):
-	img = cv2.cvtColor(cv2.imread(image_name), cv2.COLOR_BGR2YCR_CB)
-	for row in xrange(img.shape[0]):
-		for col in xrange(img.shape[1]):
-			idx = (row, col)
-			_, cr, cb = img[idx]
-			if (cr, cb) not in dominant_colorset:
-				img[idx] = (0,128,128)
-
-	return img
-
 def find_top_boundary(court_mask):
-	# top_line_set = set()
-	# for col in xrange(img.shape[1]):
-	# 	for row in xrange(img.shape[0]):
-	# 		if court_mask[row][col] != (0,128,128):
-	# 			top_line_set.append((row,col))
-	# 			break
-
-	# # RANSAC (projection threshold ~0.5 of horizontal baseline)
-	# best_top_line = find_top_line(top_line_set)
 	top_line_only = np.copy(court_mask)
+	# print 'Num columns is %s' %(court_mask.shape[1])
+	# print 'Num rows is %s' %(court_mask.shape[0])
 	for col in xrange(court_mask.shape[1]):
 		top_found = False
 		for row in xrange(court_mask.shape[0]):
 			if top_found:
-				top_line_only[row][col] = (0,128,128)
+				top_line_only[row][col] = 0
 			else:
-				if not np.array_equal(top_line_only[row][col], np.array([0,128,128])):
+				if top_line_only[row][col]:
+					# print "Row is %s, column is %s, binary value is %s" %(row, col, top_line_only[row][col])
 					top_found = True
 
 	# Hough transform to find top boundary (doesn't work that well)
 	best_top_line = hough_find_top_line(top_line_only)
-	# RANSAC (projection threshold ~0.5 of horizontal baseline)
-	# best_top_line = ransac_find_top_line(top_line_only)
-
-def hough_find_top_line(top_line_only):
-	# Finding the best threshold for Hough
-	for i in range(1450,1460):
-		top_line_copy = np.copy(top_line_only)
-		gray = cv2.cvtColor(top_line_copy,cv2.COLOR_BGR2GRAY)	
-		lines = cv2.HoughLines(gray,1,np.pi/180,i)
-
-		count = 0
-		for rho,theta in lines[0]:
-			count += 1
-			a = np.cos(theta)
-			b = np.sin(theta)
-			x0 = a*rho
-			y0 = b*rho
-			x1 = int(x0 + 1000*(-b))
-			y1 = int(y0 + 1000*(a))
-			x2 = int(x0 - 1000*(-b))
-			y2 = int(y0 - 1000*(a))
-
-			cv2.line(top_line_copy,(x1,y1),(x2,y2),(82,240,90),2)
-
-		print 'The number of lines with threshold at %d is %d' %(i, count)
-		cv2.imwrite('images/test' + str(i) + '.jpg', cv2.cvtColor(top_line_copy, cv2.COLOR_YCR_CB2BGR))
-
-# As described in Farin 2005
-def ransac_find_top_line(top_line_set):
-	num_cols = len(top_line_set)
-	iterations = 25
-	th_cover = 0.5
-	best_line = 0
-	best_top_line = 0
-
-	for i in range(0,iterations):
-		#choose set_size number of points
-		random_choices = sample(xrange(num_cols), set_size)
-		sample_inliers = np.array([random_choices[j] for j in range(0,num_cols)])
-
-		#Fit line
-
-		#Use line on other data, if pass threshold, then compare against best line
-
 
 if __name__ == '__main__':
-	image_root = 'images/5993'
+	image_root = 'images/6175'
 	image_ext = '.jpg'
 	image_name = image_root + image_ext
 
@@ -168,5 +107,5 @@ if __name__ == '__main__':
 	# 		cv2.cvtColor(court_mask, cv2.COLOR_YCR_CB2BGR))
 
 	dominant_colorset = get_dominant_colorset(image_name, 0.02, 1)
-	court_mask = create_court_mask(image_name, dominant_colorset)
+	court_mask = create_court_mask(image_name, binary_gray=True)
 	find_top_boundary(court_mask)
