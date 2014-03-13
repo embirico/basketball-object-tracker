@@ -20,7 +20,7 @@ def put_lines_on_img(bgr_img, lines_rho_theta):
     y2 = int(y0 - 1000*(a))
     cv2.line(bgr_img,(x1,y1),(x2,y2),(0,0,255),2)
 
-
+# Original get lines
 # def get_lines(gray, thresh=55):
 #   flooded = colors.fill_holes_with_contour_filling(gray, inverse=True)
 #   cv2.imwrite('images/mask_black_flooded.jpg', flooded)
@@ -37,7 +37,8 @@ def put_lines_on_img(bgr_img, lines_rho_theta):
 #   # call canny
 #   # call hough
 
-def get_lines_in_groups(gray_flooded2, thresh, _sideline, _baseline):
+def get_lines(gray_flooded2, sideline, baseline):
+  thresh = 50
   canny = cv2.Canny(gray_flooded2.copy(), 50, 200)
   # Only find lines for areas above the ESPN score box
   lines = cv2.HoughLines(canny[0:0.79*canny.shape[0]], 1, np.pi/180, thresh)
