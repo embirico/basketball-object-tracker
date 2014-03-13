@@ -29,14 +29,19 @@ def put_lines_on_img(bgr_img, lines_rho_theta):
     y2 = int(y0 - 1000*(a))
     cv2.line(bgr_img,(x1,y1),(x2,y2),(0,0,255),2)
 
-def get_lines(gray, thesh):
-  # thresh = 50
-  canny = cv2.Canny(gray.copy(), 50, 200)
+
+def get_lines(gray, thesh=55):
+  flooded = colors.fill_holes_with_contour_filling(gray, inverse=True)
+  cv2.imwrite('images/mask_black_flooded.jpg', flooded)
+  canny = cv2.Canny(flooded.copy(), 50, 200)
   # Only find lines for areas above the ESPN score box
   lines = cv2.HoughLines(canny[0:0.79*canny.shape[0]], 1, np.pi/180, thresh)
   bgr = colors.gray_to_bgr(gray)
   if lines is not None:
+    print image_name
+    bgr = cv2.imread(image_name)
     put_lines_on_img(bgr, lines[0])
+    # put_lines_on_img(bgr, lines[0])
   return bgr
   # call canny
   # call hough
@@ -74,9 +79,10 @@ def group_lines(lines_rho_theta):
   #   print 'Size of groups: %s' %(len(group))
   return line_groups
 
+
 if __name__ == '__main__':
-  # image_root = 'images/6175'
-  image_root = 'images/5993'
+  image_root = 'images/6373'
+  # image_root = 'images/5993'
   image_ext = '.jpg'
   image_name = image_root + image_ext
 
@@ -101,11 +107,11 @@ if __name__ == '__main__':
 
 # Unused code kept for the report etc -----------
 
-
 # See https://github.com/Itseez/opencv/blob/master/samples/python2/floodfill.py
 def flood_holes(gray):
   # Setup
   flooded = gray.copy()
+  flooded = cv2.bitwise_not(flooded)
   h, w = gray.shape[:2]
   mask = np.zeros((h+2, w+2), np.uint8)
   connectivity = 4
@@ -114,12 +120,15 @@ def flood_holes(gray):
   hi = 128
 
   # Do
-  seed_pt = (350, 350)
+  seed_pt = (400, 10)
   cv2.floodFill(flooded, mask, seed_pt, (255,), lo, hi, flags)
   flooded = colors.gray_to_bgr(flooded)
   cv2.circle(flooded, seed_pt, 2, (0, 0, 255), -1)
 
-  return flooded
+
+  return cv2.bitwise_not(flooded)
+
+
 
 
 def fill_holes_with_img_opening(gray):
