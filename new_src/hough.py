@@ -37,39 +37,68 @@ def put_lines_on_img(bgr_img, lines_rho_theta):
 #   # call canny
 #   # call hough
 
-def get_lines(gray_flooded2, sideline, baseline):
-  thresh = 50
+def get_lines_from_paint(gray_flooded2, sideline, baseline):
+  THRESH = 50
+  # ANGLE_DIFF = .35
+  # DIST_DIFF = 50
+  ANGLE_DIFF = .5
+  DIST_DIFF = 10
+  parr = lambda theta1, theta2: abs(theta2 - theta1) < ANGLE_DIFF
+  far = lambda rho1, rho2: abs(rho2 - rho1) > DIST_DIFF
+
   canny = cv2.Canny(gray_flooded2.copy(), 50, 200)
   # Only find lines for areas above the ESPN score box
-  lines = cv2.HoughLines(canny[0:0.79*canny.shape[0]], 1, np.pi/180, thresh)
-  grouped_lines = group_lines(lines[0])
-  # best_of_group = [i[0] for i in grouped_lines]
-  print 'Number of groups: %s' %(len(grouped_lines))
-  for i in range(len(grouped_lines)):
-    bgr = colors.gray_to_bgr(gray)
-    # put_lines_on_img(bgr, [best_of_group[i]])
-    put_lines_on_img(bgr, grouped_lines[i])
-    # print best_of_group[i]
-    cv2.imwrite('images/grouped_lines_' + str(i) + '.jpg', bgr)
+  lines = cv2.HoughLines(canny[0:0.79*canny.shape[0]], 1, np.pi/180, THRESH)
+  freethrowline = None
+  paintline = None
+  for line in lines[0]:
+    rho, theta = line
+    if freethrowline is None and parr(theta, baseline[1]) and far(rho, baseline[0]):
+      freethrowline = line
+    elif paintline is None and parr(theta, sideline[1]) and far(rho, sideline[0]):
+      paintline = line
+    if paintline is not None and freethrowline is not None:
+      return (freethrowline, paintline)
+  print 'REACHED END OF FOR LOOP'
+  return (freethrowline, paintline)
 
-def group_lines(lines_rho_theta):
-  line_groups = []
-  line_groups.append([(lines_rho_theta[0])])
 
-  for rho, theta in lines_rho_theta[1:]:
-    new_group = True
-    for key in range(len(line_groups)):
-      # Append to list if close to existing theta
-      if abs(line_groups[key][0][1] - theta) < 0.2:
-        line_groups[key].append((rho, theta))
-        new_group = False
-        break
-    if new_group:
-      line_groups.append([(rho, theta)])
 
-  # for group in line_groups:
-  #   print 'Size of groups: %s' %(len(group))
-  return line_groups
+
+
+
+
+
+
+  # grouped_lines = group_lines(lines[0])
+  # # best_of_group = [i[0] for i in grouped_lines]
+  # print 'Number of groups: %s' %(len(grouped_lines))
+  # for i in range(len(grouped_lines)):
+  #   bgr = colors.gray_to_bgr(gray)
+  #   # put_lines_on_img(bgr, [best_of_group[i]])
+  #   put_lines_on_img(bgr, grouped_lines[i])
+  #   # print best_of_group[i]
+  #   cv2.imwrite('images/grouped_lines_' + str(i) + '.jpg', bgr)
+
+
+# def group_lines(lines_rho_theta):
+#   line_groups = []
+#   line_groups.append([(lines_rho_theta[0])])
+
+#   for rho, theta in lines_rho_theta[1:]:
+#     new_group = True
+#     for key in range(len(line_groups)):
+#       # Append to list if close to existing theta
+#       if abs(line_groups[key][0][1] - theta) < 0.2:
+#         line_groups[key].append((rho, theta))
+#         new_group = False
+#         break
+#     if new_group:
+#       line_groups.append([(rho, theta)])
+
+#   # for group in line_groups:
+#   #   print 'Size of groups: %s' %(len(group))
+#   return line_groups
 
 
 if __name__ == '__main__':

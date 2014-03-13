@@ -5,6 +5,7 @@ import numpy as np
 # Local imports
 import colors
 import top_line_detection as tld
+import hough
 
 
 class ImageObject():
@@ -16,14 +17,13 @@ class ImageObject():
 	# Lines
 	_sideline = None
 	_baseline = None
-	_freethrow_line = None
-	_close_paint_line = None
+	_freethrowline = None
+	_close_paintline = None
 	# Points
 	_sideline_baseline = None # The far one in the corner
 	_close_paint_baseline = None # Intersection between close paintline and baseline
 	_close_paint_freethrow = None # Int btw close paintline and freethrow line
 	_sideline_freethrow = None # Int btw far sideline and freethrow line
-
 
 
 	def __init__(self, image_name):
@@ -72,10 +72,36 @@ class ImageObject():
 		return self._baseline
 
 
+	def get_freethrowline(self):
+		if self._freethrowline is None:
+			lines = hough.get_lines_from_paint(self.get_gray_flooded2(),
+				self.get_sideline(), self.get_baseline())
+			if lines[0] is None:
+				raise Exception('Did not find freethrow line')
+			if lines[1] is None:
+				raise Exception('Did not find paint line')
+			self._freethrowline, self._close_paintline = lines
+		return self._freethrowline
+
+
+	def get_close_paintline(self):
+		if self._close_paintline is None:
+			_ = self.get_freethrowline()
+		return self._close_paintline
+
+
+def testlines(image_name):
+	img_obj = ImageObject(image_name)
+	lines = [img_obj.get_freethrowline(), img.obj.get_close_paintline(),
+		img_obj.get_sideline(), img_obj.get_baseline()]
+	img = img_obj.get_bgr_img
+	hough.put_lines_on_img(img_obj.get_bgr_img, lines)
+	colors.show_image(img)
+
 
 if __name__ == '__main__':
 	image_root = 'images/5993'
 	image_ext = '.jpg'
 	image_name = image_root + image_ext
-	img_obj = ImageObject(image_name)
-	colors.show_image(img_obj.get_gray_flooded2())
+	testlines(image_name)
+	# colors.show_image(img_obj.get_gray_flooded2())
