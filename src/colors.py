@@ -70,7 +70,7 @@ def get_paint_mask(image_name):
 			if court_mask[row][col]:
 				court_masked[row][col] = BGR_BLACK
 
-	show_image(court_masked)
+	return court_masked
 
 
 def fill_holes_with_contour_filling(gray, inverse=False):
