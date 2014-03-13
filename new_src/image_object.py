@@ -41,5 +41,4 @@ if __name__ == '__main__':
 	image_ext = '.jpg'
 	image_name = image_root + image_ext
 	img_obj = ImageObject(image_name)
-	# colors.show_image(img_obj.get_binary_court_mask())
-	colors.show_image(img_obj._bgr_img)
+	colors.show_image(img_obj.get_binary_court_mask())
