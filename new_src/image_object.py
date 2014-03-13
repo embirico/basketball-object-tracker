@@ -52,7 +52,7 @@ class ImageObject():
 	def get_gray_flooded2(self):
 		if self._gray_flooded2 is None:
 			self._gray_flooded2 = \
-				colors.get_gray_flooded2(self.get_binary_court_mask)
+				colors.get_double_flooded_mask(self.get_binary_court_mask())
 		return self._gray_flooded2.copy()
 
 
