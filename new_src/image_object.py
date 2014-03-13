@@ -12,6 +12,7 @@ class ImageObject():
 	_bgr_img = None
 	_binary_court_mask = None
 	_dominant_colorset = None
+	_gray_flooded2 = None
 	# Lines
 	_sideline = None
 	_baseline = None
@@ -48,24 +49,27 @@ class ImageObject():
 		return self._dominant_colorset.copy()
 
 
-	def get_homography_points(self):
-		pass
+	def get_gray_flooded2(self):
+		if self._gray_flooded2 is None:
+			self._gray_flooded2 = \
+				colors.get_double_flooded_mask(self.get_binary_court_mask())
+		return self._gray_flooded2.copy()
 
 
 	def get_sideline(self):
-		if self.sideline is None:
+		if self._sideline is None:
 			lines = tld.find_top_boundary(self.get_binary_court_mask())
 			if len(lines) < 2:
-				raise Exception('ERROR: Did not find baseiline')
+				raise Exception('ERROR: Did not find baseline')
 			self._sideline = lines[0]
 			self._baseline = lines[1]
-		return self.sideline
+		return self._sideline
 
 
 	def get_baseline(self):
-		if self.baseline is None:
+		if self._baseline is None:
 			_ = self.get_sideline()
-		return self.baseline
+		return self._baseline
 
 
 
@@ -74,5 +78,4 @@ if __name__ == '__main__':
 	image_ext = '.jpg'
 	image_name = image_root + image_ext
 	img_obj = ImageObject(image_name)
-	# colors.show_image(img_obj.get_binary_court_mask())
-	print img_obj.get_baseline()
+	colors.show_image(img_obj.get_gray_flooded2())
