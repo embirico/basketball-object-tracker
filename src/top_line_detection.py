@@ -4,7 +4,7 @@ import numpy as np
 
 import line_pixel_detection as lpd
 import colors
-from find_intersection_hough_lines import *
+import find_intersection_hough_lines as find_intersect
 
 def find_top_boundary(court_mask):
 	top_line_only = get_top_pixels(court_mask)
@@ -26,8 +26,6 @@ def get_top_pixels(court_mask):
 	return top_pixels
 
 def hough_find_top_line(top_line_only):
-	# Finding the best threshold for Hough
-
 	top_line_copy = np.copy(top_line_only)
 	lines = cv2.HoughLines(top_line_copy,5,np.pi/180 * 3,75)[0]
 	print 'The number of lines with threshold at %d is %d' %(75, len(lines))
@@ -76,15 +74,14 @@ def hough_find_top_line(top_line_only):
 		theta_baseline = theta_0
 		rho_sideline = rho_1
 		rho_baseline = rho_0
-
-	# a = [[rho_sideline,theta_sideline], [rho_baseline, theta_baseline]] if theta_baseline else [rho_sideline,theta_sideline]
-
+		
 	# Find intersection point
 	if theta_baseline:
-		intersection = find_intersecting_point_hough_lines(theta_sideline, rho_sideline, theta_baseline, rho_baseline)
-		print intersection
-		cv2.circle(top_line_copy, intersection, 5, (255,255,255), -1)
-		cv2.imwrite('images/intersection.jpg', top_line_copy)
+		intersection = find_intersect.intersect_point(theta_sideline, rho_sideline, theta_baseline, rho_baseline)
+		# print intersection
+		# cv2.circle(top_line_copy, intersection, 5, (255,255,255), -1)
+		# cv2.imwrite('images/intersection.jpg', top_line_copy)
+		return intersection
 	else:
 		print 'no intersection'
 

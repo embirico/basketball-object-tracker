@@ -1,6 +1,6 @@
 import numpy as np
 
-def find_intersecting_point_hough_lines(theta_sideline, rho_sideline, theta_baseline, rho_baseline):
+def intersect_point(theta_sideline, rho_sideline, theta_baseline, rho_baseline):
 	a_sideline = np.cos(theta_sideline)
 	b_sideline = np.sin(theta_sideline)
 	slope_sideline = a_sideline / -b_sideline
