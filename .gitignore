@@ -1,5 +1,6 @@
 # Data
 videos/*
+images/_*
 
 # Python
 *.py[cod]
