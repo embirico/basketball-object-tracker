@@ -24,7 +24,7 @@ def get_top_pixels(court_mask):
 def hough_find_top_line(top_line_only):
 	top_line_copy = np.copy(top_line_only)
 	lines = cv2.HoughLines(top_line_copy,5,np.pi/180 * 3,75)[0]
-	print 'The number of lines with threshold at %d is %d' %(75, len(lines))
+	# print 'The number of lines with threshold at %d is %d' %(75, len(lines))
 
 	theta_0 = lines[0][1]
 	rho_0 = lines[0][0]
