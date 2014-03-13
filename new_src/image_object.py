@@ -1,6 +1,7 @@
 # Library imports
 import cv2
 import numpy as np
+import pickle
 
 # Local imports
 import colors
@@ -10,6 +11,8 @@ import hough
 
 class ImageObject():
 	# Variables
+	verbose = False
+	# Images
 	_bgr_img = None
 	_gray_mask = None
 	_dominant_colorset = None
@@ -26,12 +29,16 @@ class ImageObject():
 	_sideline_freethrow = None # Int btw far sideline and freethrow line
 
 
-	def __init__(self, image_name):
+	# You can pass a precomputed gray_mask if you want to save 5s
+	def __init__(self, image_name, gray_mask=None, verbose=False):
 		self._bgr_img = cv2.imread(image_name)
-
+		self._gray_mask = gray_mask
+		print self._dominant_colorset
+		self.verbose = verbose
 
 	# Exported methods
 	def get_gray_mask(self):
+		if self.verbose: print 'get_gray_mask'
 		if self._gray_mask is None:
 			d_c = self.get_dominant_colorset()
 			self._gray_mask = \
@@ -44,12 +51,14 @@ class ImageObject():
 
 
 	def get_dominant_colorset(self):
+		if self.verbose: print 'get_dominant_colorset'
 		if self._dominant_colorset is None:
 			self._dominant_colorset = colors.get_dominant_colorset(self.get_bgr_img())
 		return self._dominant_colorset.copy()
 
 
 	def get_gray_flooded2(self):
+		if self.verbose: print 'get_gray_flooded2'
 		if self._gray_flooded2 is None:
 			self._gray_flooded2 = \
 				colors.get_double_flooded_mask(self.get_gray_mask())
@@ -57,6 +66,7 @@ class ImageObject():
 
 
 	def get_sideline(self):
+		if self.verbose: print 'get_sideline'
 		if self._sideline is None:
 			lines = tld.find_top_boundary(self.get_gray_mask())
 			if len(lines) < 2:
@@ -73,6 +83,7 @@ class ImageObject():
 
 
 	def get_freethrowline(self):
+		if self.verbose: print 'get_freethrowline'
 		if self._freethrowline is None:
 			lines = hough.get_lines_from_paint(self.get_gray_flooded2(),
 				self.get_sideline(), self.get_baseline())
@@ -90,18 +101,20 @@ class ImageObject():
 		return self._close_paintline
 
 
-def testlines(image_name):
-	img_obj = ImageObject(image_name)
-	lines = [img_obj.get_freethrowline(), img_obj.get_close_paintline(),
+def testlines(img_obj):
+	lines = [img_obj.get_freethrowline(), img.obj.get_close_paintline(),
 		img_obj.get_sideline(), img_obj.get_baseline()]
 	img = img_obj.get_bgr_img()
-	hough.put_lines_on_img(img, lines)
+	hough.put_lines_on_img(img_obj.get_bgr_img, lines)
 	colors.show_image(img)
 
 
 if __name__ == '__main__':
-	image_root = 'images/5993'
-	image_ext = '.jpg'
-	image_name = image_root + image_ext
-	testlines(image_name)
+	image_name = 'images/5993.jpg'
+	pickle_name = 'pickles/5993_gray_mask.pickle'
+	gray_mask = pickle.load(open(pickle_name, 'r'))
+	img_obj = ImageObject(image_name, gray_mask, verbose=True)
+	testlines(img_obj)
 	# colors.show_image(img_obj.get_gray_flooded2())
+	# pickle.dump(img_obj.get_gray_mask(), open(pickle_name, 'w'))
+	print 'Done'
