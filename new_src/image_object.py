@@ -10,7 +10,7 @@ import top_line_detection as tld
 class ImageObject():
 	# Variables
 	_bgr_img = None
-	_binary_court_mask = None
+	_gray_mask = None
 	_dominant_colorset = None
 	_gray_flooded2 = None
 	# Lines
@@ -31,12 +31,12 @@ class ImageObject():
 
 
 	# Exported methods
-	def get_binary_court_mask(self):
-		if self._binary_court_mask is None:
+	def get_gray_mask(self):
+		if self._gray_mask is None:
 			d_c = self.get_dominant_colorset()
-			self._binary_court_mask = \
+			self._gray_mask = \
 				colors.create_court_mask(self.get_bgr_img(), d_c, True)
-		return self._binary_court_mask.copy()
+		return self._gray_mask.copy()
 
 
 	def get_bgr_img(self):
@@ -52,13 +52,13 @@ class ImageObject():
 	def get_gray_flooded2(self):
 		if self._gray_flooded2 is None:
 			self._gray_flooded2 = \
-				colors.get_double_flooded_mask(self.get_binary_court_mask())
+				colors.get_double_flooded_mask(self.get_gray_mask())
 		return self._gray_flooded2.copy()
 
 
 	def get_sideline(self):
 		if self._sideline is None:
-			lines = tld.find_top_boundary(self.get_binary_court_mask())
+			lines = tld.find_top_boundary(self.get_gray_mask())
 			if len(lines) < 2:
 				raise Exception('ERROR: Did not find baseline')
 			self._sideline = lines[0]
