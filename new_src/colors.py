@@ -29,14 +29,14 @@ def create_court_mask(_bgr_img, dominant_colorset, binary_gray=False):
 	return ycbcr_to_gray(_bgr_img) if binary_gray else _bgr_img
 
 
-def get_dominant_colorset(image_name, thresh=0.02, ignore_crowd=True,
+def get_dominant_colorset(_bgr_img, thresh=0.02, ignore_crowd=True,
 	peak_num=1):
-	img = cv2.cvtColor(cv2.imread(image_name), cv2.COLOR_BGR2YCR_CB)
+	ycrcb_img = cv2.cvtColor(_bgr_img, cv2.COLOR_BGR2YCR_CB)
 
 	if ignore_crowd:
-		img = img[CROWD_TOP_HEIGHT_FRACTION*img.shape[0] : -CROWD_BOTTOM_HEIGHT_FRACTION*img.shape[0]]
+		ycrcb_img = ycrcb_img[CROWD_TOP_HEIGHT_FRACTION*ycrcb_img.shape[0] : -CROWD_BOTTOM_HEIGHT_FRACTION*ycrcb_img.shape[0]]
 
-	hist = cv2.calcHist([img], [1,2], None, [256,256], [0,256, 0,256])
+	hist = cv2.calcHist([ycrcb_img], [1,2], None, [256,256], [0,256, 0,256])
 
 	peak1_flat_idx = np.argmax(hist)
 	peak1_idx = np.unravel_index(peak1_flat_idx, hist.shape)
