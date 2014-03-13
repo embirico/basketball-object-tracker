@@ -73,6 +73,6 @@ def hough_find_top_line(top_line_only):
 
 	# Find intersection point
 	if theta_baseline:
-		return ((theta_sideline, rho_sideline), (theta_baseline, rho_baseline))
+		return ((rho_sideline, theta_sideline), (rho_baseline, theta_baseline))
 	else:
-		return ((theta_sideline, rho_sideline))
+		return ((rho_sideline, theta_sideline))

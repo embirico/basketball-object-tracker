@@ -41,10 +41,12 @@ def get_lines_from_paint(gray_flooded2, sideline, baseline):
   THRESH = 50
   # ANGLE_DIFF = .35
   # DIST_DIFF = 50
-  ANGLE_DIFF = .5
+  ANGLE_DIFF = .25
+  ANGLE_DIFF_2 = .09
   DIST_DIFF = 10
   parr = lambda theta1, theta2: abs(theta2 - theta1) < ANGLE_DIFF
   far = lambda rho1, rho2: abs(rho2 - rho1) > DIST_DIFF
+  parr2 = lambda theta1, theta2: abs(theta2 - theta1) < ANGLE_DIFF_2
 
   canny = cv2.Canny(gray_flooded2.copy(), 50, 200)
   # Only find lines for areas above the ESPN score box
@@ -53,9 +55,12 @@ def get_lines_from_paint(gray_flooded2, sideline, baseline):
   paintline = None
   for line in lines[0]:
     rho, theta = line
+
+
+
     if freethrowline is None and parr(theta, baseline[1]) and far(rho, baseline[0]):
       freethrowline = line
-    elif paintline is None and parr(theta, sideline[1]) and far(rho, sideline[0]):
+    elif paintline is None and parr2(theta, sideline[1]) and far(rho, sideline[0]):
       paintline = line
     if paintline is not None and freethrowline is not None:
       return (freethrowline, paintline)

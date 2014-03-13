@@ -92,10 +92,10 @@ class ImageObject():
 
 def testlines(image_name):
 	img_obj = ImageObject(image_name)
-	lines = [img_obj.get_freethrowline(), img.obj.get_close_paintline(),
+	lines = [img_obj.get_freethrowline(), img_obj.get_close_paintline(),
 		img_obj.get_sideline(), img_obj.get_baseline()]
-	img = img_obj.get_bgr_img
-	hough.put_lines_on_img(img_obj.get_bgr_img, lines)
+	img = img_obj.get_bgr_img()
+	hough.put_lines_on_img(img, lines)
 	colors.show_image(img)
 
 
