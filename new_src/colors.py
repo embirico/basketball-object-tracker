@@ -72,7 +72,7 @@ def get_paint_mask(image_name):
 
 	return court_masked
 
-def get_doubled_flooded_mask(gray_mask):
+def get_double_flooded_mask(gray_mask):
 	gray_flooded = fill_holes_with_contour_filling(gray_mask)
 	gray_flooded2 = fill_holes_with_contour_filling(gray_flooded, inverse=True)
 	return gray_flooded2
