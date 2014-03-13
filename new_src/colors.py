@@ -12,6 +12,9 @@ from collections import deque
 CROWD_TOP_HEIGHT_FRACTION = .375;
 CROWD_BOTTOM_HEIGHT_FRACTION = .2;
 BGR_BLACK = (0,0,0)
+YCBCR_BLACK = (0,128,128)
+YCBCR_WHITE = (255,128,128)
+
 
 
 # Exported code ---------------------------------
@@ -23,9 +26,9 @@ def create_court_mask(_bgr_img, dominant_colorset, binary_gray=False):
 			idx = (row, col)
 			_, cr, cb = img[idx]
 			if (cr, cb) not in dominant_colorset:
-				img[idx] = (0,128,128)
+				img[idx] = YCBCR_BLACK
 			elif binary_gray:
-				img[idx] = (255,128,128)
+				img[idx] = YCBCR_WHITE
 
 	return ycbcr_to_gray(img) if binary_gray else img
 
