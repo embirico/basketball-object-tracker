@@ -58,19 +58,19 @@ def get_dominant_colorset(_bgr_img, thresh=0.02, ignore_crowd=True,
 	return connected_hist2
 
 
+# TODO Delete
+# def get_paint_mask(image_name):
+# 	court_colorset = get_dominant_colorset(image_name)
+# 	court_mask = create_court_mask(image_name, court_colorset, binary_gray=True)
+# 	court_mask = fill_holes_with_contour_filling(court_mask)
 
-def get_paint_mask(image_name):
-	court_colorset = get_dominant_colorset(image_name)
-	court_mask = create_court_mask(image_name, court_colorset, binary_gray=True)
-	court_mask = fill_holes_with_contour_filling(court_mask)
+# 	court_masked = cv2.imread(image_name)
+# 	for row in xrange(court_masked.shape[0]):
+# 		for col in xrange(court_masked.shape[1]):
+# 			if court_mask[row][col]:
+# 				court_masked[row][col] = BGR_BLACK
 
-	court_masked = cv2.imread(image_name)
-	for row in xrange(court_masked.shape[0]):
-		for col in xrange(court_masked.shape[1]):
-			if court_mask[row][col]:
-				court_masked[row][col] = BGR_BLACK
-
-	return court_masked
+# 	return court_masked
 
 def get_double_flooded_mask(gray_mask):
 	gray_flooded = fill_holes_with_contour_filling(gray_mask)
