@@ -4,6 +4,26 @@ import numpy as np
 
 import line_pixel_detection as lpd
 import colors
+from find_intersection_hough_lines import *
+
+def find_top_boundary(court_mask):
+	top_line_only = get_top_pixels(court_mask)
+	best_top_line = hough_find_top_line(top_line_only)
+
+def get_top_pixels(court_mask):
+	top_pixels = np.copy(court_mask)
+	# print 'Num columns is %s' %(court_mask.shape[1])
+	# print 'Num rows is %s' %(court_mask.shape[0])
+	for col in xrange(court_mask.shape[1]):
+		top_found = False
+		for row in xrange(court_mask.shape[0]):
+			if top_found:
+				top_pixels[row][col] = 0
+			else:
+				if top_pixels[row][col]:
+					# print "Row is %s, column is %s, binary value is %s" %(row, col, top_line_only[row][col])
+					top_found = True
+	return top_pixels
 
 def hough_find_top_line(top_line_only):
 	# Finding the best threshold for Hough
@@ -23,27 +43,26 @@ def hough_find_top_line(top_line_only):
 			rho_1 = rho
 			break
 
-	# # To print lines
-	# a = np.cos(theta_0)
-	# b = np.sin(theta_0)
-	# x0 = a*rho_0
-	# y0 = b*rho_0
-	# x1 = int(x0 + 1000*(-b))
-	# y1 = int(y0 + 1000*(a))
-	# x2 = int(x0 - 1000*(-b))
-	# y2 = int(y0 - 1000*(a))
-	# cv2.line(top_line_copy,(x1,y1),(x2,y2),(82,240,90),2)
-	# cv2.imwrite('images/test_binary_5993_75' + '.houghline opencvjpg', top_line_copy)
-	# a = np.cos(theta_1)
-	# b = np.sin(theta_1)
-	# x0 = a*rho_1
-	# y0 = b*rho_1
-	# x1 = int(x0 + 1000*(-b))
-	# y1 = int(y0 + 1000*(a))
-	# x2 = int(x0 - 1000*(-b))
-	# y2 = int(y0 - 1000*(a))
-	# cv2.line(top_line_copy,(x1,y1),(x2,y2),(82,240,90),2)
-	# cv2.imwrite('images/test_binary_5993_75' + '.jpg', top_line_copy)
+	# To print lines
+	a = np.cos(theta_0)
+	b = np.sin(theta_0)
+	x0 = a*rho_0
+	y0 = b*rho_0
+	x1 = int(x0 + 1000*(-b))
+	y1 = int(y0 + 1000*(a))
+	x2 = int(x0 - 1000*(-b))
+	y2 = int(y0 - 1000*(a))
+	cv2.line(top_line_copy,(x1,y1),(x2,y2),(82,240,90),2)
+
+	a = np.cos(theta_1)
+	b = np.sin(theta_1)
+	x0 = a*rho_1
+	y0 = b*rho_1
+	x1 = int(x0 + 1000*(-b))
+	y1 = int(y0 + 1000*(a))
+	x2 = int(x0 - 1000*(-b))
+	y2 = int(y0 - 1000*(a))
+	cv2.line(top_line_copy,(x1,y1),(x2,y2),(82,240,90),2)
 
 	print 'The first theta is %s, the second theta is %s' %(theta_0, theta_1)
 
@@ -58,25 +77,16 @@ def hough_find_top_line(top_line_only):
 		rho_sideline = rho_1
 		rho_baseline = rho_0
 
-	a = [[rho_sideline,theta_sideline], [rho_baseline, theta_baseline]] if theta_baseline else [rho_sideline,theta_sideline]
+	# a = [[rho_sideline,theta_sideline], [rho_baseline, theta_baseline]] if theta_baseline else [rho_sideline,theta_sideline]
 
 	# Find intersection point
-	if len(a) > 1:
-		a_sideline = np.cos(theta_sideline)
-		b_sideline = np.sin(theta_sideline)
-		x0_sideline = a*rho_sideline
-		y0_sideline = b*rho_sideline
-
-		a_baseline = np.cos(theta_baseline)
-		b_baseline = np.sin(theta_baseline)
-		x0_baseline = a*rho_baseline
-		y0_baseline = b*rho_baseline
-
-
-
+	if theta_baseline:
+		intersection = find_intersecting_point_hough_lines(theta_sideline, rho_sideline, theta_baseline, rho_baseline)
+		print intersection
+		cv2.circle(top_line_copy, intersection, 5, (255,255,255), -1)
+		cv2.imwrite('images/intersection.jpg', top_line_copy)
 	else:
 		print 'no intersection'
-
 
 def confirm_hough_lines_sorted(top_line_only):
 	lines_at_60 = cv2.HoughLines(top_line,5,np.pi/180 * 3,60)[0]
