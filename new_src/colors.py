@@ -72,9 +72,13 @@ def get_paint_mask(image_name):
 
 	return court_masked
 
+def get_doubled_flooded_mask(gray_mask):
+	gray_flooded = fill_holes_with_contour_filling(gray_mask)
+	gray_flooded2 = fill_holes_with_contour_filling(gray_flooded, inverse=True)
+	return gray_flooded2
 
-def fill_holes_with_contour_filling(gray, inverse=False):
-  filled = gray.copy()
+def fill_holes_with_contour_filling(gray_mask, inverse=False):
+  filled = gray_mask.copy()
   if inverse:
   	filled = cv2.bitwise_not(filled)
   contour, _ = cv2.findContours(filled,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
