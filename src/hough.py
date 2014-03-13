@@ -30,7 +30,7 @@ def put_lines_on_img(bgr_img, lines_rho_theta):
     cv2.line(bgr_img,(x1,y1),(x2,y2),(0,0,255),2)
 
 
-def get_lines(gray, thesh=55):
+def get_lines(gray, thresh=55):
   flooded = colors.fill_holes_with_contour_filling(gray, inverse=True)
   cv2.imwrite('images/mask_black_flooded.jpg', flooded)
   canny = cv2.Canny(flooded.copy(), 50, 200)
