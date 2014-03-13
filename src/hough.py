@@ -18,6 +18,7 @@ def fill_holes_with_contour_filling(gray):
 
 def put_lines_on_img(bgr_img, lines_rho_theta):
   for rho, theta in lines_rho_theta:
+    # print 'The parameters of the line: rho = %s, theta = %s' %(rho, theta)
     a = np.cos(theta)
     b = np.sin(theta)
     x0 = a*rho
@@ -28,11 +29,11 @@ def put_lines_on_img(bgr_img, lines_rho_theta):
     y2 = int(y0 - 1000*(a))
     cv2.line(bgr_img,(x1,y1),(x2,y2),(0,0,255),2)
 
-
 def get_lines(gray, thesh):
   # thresh = 50
   canny = cv2.Canny(gray.copy(), 50, 200)
-  lines = cv2.HoughLines(canny, 1, np.pi/180, thresh)
+  # Only find lines for areas above the ESPN score box
+  lines = cv2.HoughLines(canny[0:0.79*canny.shape[0]], 1, np.pi/180, thresh)
   bgr = colors.gray_to_bgr(gray)
   if lines is not None:
     put_lines_on_img(bgr, lines[0])
@@ -40,6 +41,38 @@ def get_lines(gray, thesh):
   # call canny
   # call hough
 
+def get_lines_in_groups(gray, thresh):
+  canny = cv2.Canny(gray.copy(), 50, 200)
+  # Only find lines for areas above the ESPN score box
+  lines = cv2.HoughLines(canny[0:0.79*canny.shape[0]], 1, np.pi/180, thresh)
+  grouped_lines = group_lines(lines[0])
+  best_of_group = [i[0] for i in grouped_lines]
+  print 'Number of groups: %s' %(len(grouped_lines))
+  for i in range(len(best_of_group)):
+    bgr = colors.gray_to_bgr(gray)
+    put_lines_on_img(bgr, [best_of_group[i]])
+    print best_of_group[i]
+    cv2.imwrite('images/grouped_lines_' + str(i) + '.jpg', bgr)
+
+def group_lines(lines_rho_theta):
+  line_groups = []
+  line_groups.append([(lines_rho_theta[0])])
+  print lines_rho_theta[0]
+
+  for rho, theta in lines_rho_theta[1:]:
+    new_group = True
+    for key in range(len(line_groups)):
+      # Append to list if close to existing theta
+      if abs(line_groups[key][0][1] - theta) < 0.2:
+        line_groups[key].append((rho, theta))
+        new_group = False
+        break
+    if new_group:
+      line_groups.append([(rho, theta)])
+
+  for group in line_groups:
+    print 'Size of groups: %s' %(len(group))
+  return line_groups
 
 if __name__ == '__main__':
   # image_root = 'images/6175'
@@ -51,9 +84,12 @@ if __name__ == '__main__':
   cv2.imwrite('images/mask.jpg', court_mask)
   flooded = fill_holes_with_contour_filling(court_mask)
   cv2.imwrite('images/mask_flooded.jpg', flooded)
-  for thresh in xrange(30, 80, 5):
-    with_lines = get_lines(flooded, thresh)
-    cv2.imwrite('images/mask_lined{}.jpg'.format(thresh), with_lines)
+
+  get_lines_in_groups(flooded, 50)
+
+  # for thresh in xrange(30, 80, 5):theta
+  #   with_lines = get_lines(flooded, thresh)
+  #   cv2.imwrite('images/mask_lined{}.jpg'.format(thresh), with_lines)
 
   # court_mask = colors.ycbcr_to_binary(court_mask)
   # plt.imshow(court_mask)
