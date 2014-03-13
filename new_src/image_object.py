@@ -53,19 +53,19 @@ class ImageObject():
 
 
 	def get_sideline(self):
-		if self.sideline is None:
+		if self._sideline is None:
 			lines = tld.find_top_boundary(self.get_binary_court_mask())
 			if len(lines) < 2:
-				raise Exception('ERROR: Did not find baseiline')
+				raise Exception('ERROR: Did not find baseline')
 			self._sideline = lines[0]
 			self._baseline = lines[1]
-		return self.sideline
+		return self._sideline
 
 
 	def get_baseline(self):
-		if self.baseline is None:
+		if self._baseline is None:
 			_ = self.get_sideline()
-		return self.baseline
+		return self._baseline
 
 
 
