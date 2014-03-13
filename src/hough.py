@@ -46,18 +46,18 @@ def get_lines_in_groups(gray, thresh):
   # Only find lines for areas above the ESPN score box
   lines = cv2.HoughLines(canny[0:0.79*canny.shape[0]], 1, np.pi/180, thresh)
   grouped_lines = group_lines(lines[0])
-  best_of_group = [i[0] for i in grouped_lines]
+  # best_of_group = [i[0] for i in grouped_lines]
   print 'Number of groups: %s' %(len(grouped_lines))
-  for i in range(len(best_of_group)):
+  for i in range(len(grouped_lines)):
     bgr = colors.gray_to_bgr(gray)
-    put_lines_on_img(bgr, [best_of_group[i]])
-    print best_of_group[i]
+    # put_lines_on_img(bgr, [best_of_group[i]])
+    put_lines_on_img(bgr, grouped_lines[i])
+    # print best_of_group[i]
     cv2.imwrite('images/grouped_lines_' + str(i) + '.jpg', bgr)
 
 def group_lines(lines_rho_theta):
   line_groups = []
   line_groups.append([(lines_rho_theta[0])])
-  print lines_rho_theta[0]
 
   for rho, theta in lines_rho_theta[1:]:
     new_group = True
@@ -70,8 +70,8 @@ def group_lines(lines_rho_theta):
     if new_group:
       line_groups.append([(rho, theta)])
 
-  for group in line_groups:
-    print 'Size of groups: %s' %(len(group))
+  # for group in line_groups:
+  #   print 'Size of groups: %s' %(len(group))
   return line_groups
 
 if __name__ == '__main__':
