@@ -8,7 +8,10 @@ from matplotlib import pyplot as plt
 import colors # local reference
 
 def put_lines_on_img(bgr_img, lines_rho_theta):
-  for rho, theta in lines_rho_theta:
+  redness = np.linspace(0, 255, len(lines_rho_theta))
+  redness = np.floor(redness)
+  blueness = 255 - redness
+  for i, (rho, theta) in enumerate(lines_rho_theta):
     # print 'The parameters of the line: rho = %s, theta = %s' %(rho, theta)
     a = np.cos(theta)
     b = np.sin(theta)
@@ -18,7 +21,9 @@ def put_lines_on_img(bgr_img, lines_rho_theta):
     y1 = int(y0 + 1000*(a))
     x2 = int(x0 - 1000*(-b))
     y2 = int(y0 - 1000*(a))
-    cv2.line(bgr_img,(x1,y1),(x2,y2),(0,0,255),2)
+    red = redness[i]
+    blue = blueness[i]
+    cv2.line(bgr_img,(x1,y1),(x2,y2),(blue,0,red),2)
 
 # Original get lines
 # def get_lines(gray, thresh=55):
@@ -37,33 +42,49 @@ def put_lines_on_img(bgr_img, lines_rho_theta):
 #   # call canny
 #   # call hough
 
-def get_lines_from_paint(gray_flooded2, sideline, baseline):
+def get_lines_from_paint(gray_flooded2, sideline, baseline, verbose=False):
   THRESH = 50
+
+  OFFSET_X = 0.01
+  OFFSET_Y = 0.2
   # ANGLE_DIFF = .35
   # DIST_DIFF = 50
   ANGLE_DIFF = .25
-  ANGLE_DIFF_2 = .09
-  DIST_DIFF = 10
+  ANGLE_DIFF_2 = .35
+  DIST_DIFF = 50
   parr = lambda theta1, theta2: abs(theta2 - theta1) < ANGLE_DIFF
   far = lambda rho1, rho2: abs(rho2 - rho1) > DIST_DIFF
   parr2 = lambda theta1, theta2: abs(theta2 - theta1) < ANGLE_DIFF_2
 
   canny = cv2.Canny(gray_flooded2.copy(), 50, 200)
-  # Only find lines for areas above the ESPN score box
-  lines = cv2.HoughLines(canny[0:0.79*canny.shape[0]], 1, np.pi/180, THRESH)
+  padded_canny = np.zeros(canny.shape, np.uint8)
+  print canny[0,0]
+  print padded_canny[0,0]
+  y_range_left = OFFSET_Y*canny.shape[0]
+  y_range_right = 0.75*canny.shape[0]
+  x_range_left = OFFSET_X*canny.shape[1]
+  x_range_right = .9*canny.shape[1]
+  padded_canny[y_range_left:y_range_right, x_range_left:x_range_right] = \
+    canny[y_range_left:y_range_right, x_range_left:x_range_right]
+
+  lines = cv2.HoughLines(padded_canny, 1, np.pi/180, THRESH)
+
+  if verbose:
+    img = colors.gray_to_bgr(gray_flooded2)
+    put_lines_on_img(img, lines[0])
+    cv2.imwrite('images/hough.jpg', img)
+
   freethrowline = None
   paintline = None
   for line in lines[0]:
     rho, theta = line
-
-
-
     if freethrowline is None and parr(theta, baseline[1]) and far(rho, baseline[0]):
       freethrowline = line
-    elif paintline is None and parr2(theta, sideline[1]) and far(rho, sideline[0]):
+    if paintline is None and parr2(theta, sideline[1]) and far(rho, sideline[0]):
       paintline = line
     if paintline is not None and freethrowline is not None:
       return (freethrowline, paintline)
+
   print 'REACHED END OF FOR LOOP'
   return (freethrowline, paintline)
 

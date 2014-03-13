@@ -32,7 +32,7 @@ def create_court_mask(_bgr_img, dominant_colorset, binary_gray=False):
 
 	return ycbcr_to_gray(img) if binary_gray else img
 
-
+#.02
 def get_dominant_colorset(_bgr_img, thresh=0.02, ignore_crowd=True,
 	peak_num=1):
 	img = cv2.cvtColor(_bgr_img, cv2.COLOR_BGR2YCR_CB)
