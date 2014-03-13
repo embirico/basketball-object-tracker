@@ -2,7 +2,6 @@ import cv
 import cv2
 import numpy as np
 import colors
-import find_intersection_hough_lines as find_intersect
 
 def find_top_boundary(court_mask):
 	top_line_only = get_top_pixels(court_mask)
