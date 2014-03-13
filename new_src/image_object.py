@@ -21,8 +21,8 @@ class ImageObject():
 	def get_binary_court_mask(self):
 		if self._binary_court_mask is None:
 			d_c = self.get_dominant_colorset()
-			self._binary_court_mask =
-				colors.create_court_mask(self.get_bgr_img, d_c, True)
+			self._binary_court_mask = \
+				colors.create_court_mask(self.get_bgr_img(), d_c, True)
 		return self._binary_court_mask.copy()
 
 
@@ -32,7 +32,7 @@ class ImageObject():
 
 	def get_dominant_colorset(self):
 		if self._dominant_colorset is None:
-			self._dominant_colorset = colors.get_dominant_colorset(self.get_bgr_img)
+			self._dominant_colorset = colors.get_dominant_colorset(self.get_bgr_img())
 		return self._dominant_colorset.copy()
 
 
@@ -41,4 +41,5 @@ if __name__ == '__main__':
 	image_ext = '.jpg'
 	image_name = image_root + image_ext
 	img_obj = ImageObject(image_name)
-	img_obj.get_binary_court_mask()
+	# colors.show_image(img_obj.get_binary_court_mask())
+	colors.show_image(img_obj._bgr_img)
