@@ -1,8 +1,6 @@
 import cv
 import cv2
 import numpy as np
-
-import line_pixel_detection as lpd
 import colors
 import find_intersection_hough_lines as find_intersect
 
