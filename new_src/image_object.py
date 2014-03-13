@@ -4,6 +4,7 @@ import numpy as np
 
 # Local imports
 import colors
+import top_line_detection as tld
 
 
 class ImageObject():
@@ -11,6 +12,17 @@ class ImageObject():
 	_bgr_img = None
 	_binary_court_mask = None
 	_dominant_colorset = None
+	# Lines
+	_sideline = None
+	_baseline = None
+	_freethrow_line = None
+	_close_paint_line = None
+	# Points
+	_sideline_baseline = None # The far one in the corner
+	_close_paint_baseline = None # Intersection between close paintline and baseline
+	_close_paint_freethrow = None # Int btw close paintline and freethrow line
+	_sideline_freethrow = None # Int btw far sideline and freethrow line
+
 
 
 	def __init__(self, image_name):
@@ -36,9 +48,31 @@ class ImageObject():
 		return self._dominant_colorset.copy()
 
 
+	def get_homography_points(self):
+		pass
+
+
+	def get_sideline(self):
+		if self.sideline is None:
+			lines = tld.find_top_boundary(self.get_binary_court_mask())
+			if len(lines) < 2:
+				raise Exception('ERROR: Did not find baseiline')
+			self._sideline = lines[0]
+			self._baseline = lines[1]
+		return self.sideline
+
+
+	def get_baseline(self):
+		if self.baseline is None:
+			_ = self.get_sideline()
+		return self.baseline
+
+
+
 if __name__ == '__main__':
 	image_root = 'images/5993'
 	image_ext = '.jpg'
 	image_name = image_root + image_ext
 	img_obj = ImageObject(image_name)
-	colors.show_image(img_obj.get_binary_court_mask())
+	# colors.show_image(img_obj.get_binary_court_mask())
+	print img_obj.get_baseline()

@@ -12,6 +12,9 @@ from collections import deque
 CROWD_TOP_HEIGHT_FRACTION = .375;
 CROWD_BOTTOM_HEIGHT_FRACTION = .2;
 BGR_BLACK = (0,0,0)
+YCBCR_BLACK = (0,128,128)
+YCBCR_WHITE = (255,128,128)
+
 
 
 # Exported code ---------------------------------
@@ -23,9 +26,9 @@ def create_court_mask(_bgr_img, dominant_colorset, binary_gray=False):
 			idx = (row, col)
 			_, cr, cb = img[idx]
 			if (cr, cb) not in dominant_colorset:
-				img[idx] = (0,128,128)
+				img[idx] = YCBCR_BLACK
 			elif binary_gray:
-				img[idx] = (255,128,128)
+				img[idx] = YCBCR_WHITE
 
 	return ycbcr_to_gray(img) if binary_gray else img
 
@@ -132,24 +135,29 @@ def show_hist(hist_list):
 	plt.show()
 
 
-def ycbcr_to_bgr(img):
+def ycbcr_to_bgr(ycbcr_img):
+	img = ycbcr_img.copy()
 	return cv2.cvtColor(img, cv2.COLOR_YCR_CB2BGR)
 
 
-def ycbcr_to_gray(img):
+def ycbcr_to_gray(ycbcr_img):
+	img = ycbcr_img.copy()
 	img = ycbcr_to_bgr(img)
 	return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
 
-def ycbcr_to_binary(img):
+def ycbcr_to_binary(ycbcr_img):
+	img = ycbcr_img.copy()
 	return ycbcr_to_gray(img) > 128
 
 
-def binary_to_gray(img):
+def binary_to_gray(binary_img):
+	img = binary_img.copy()
 	return img * 255;
 
 
-def gray_to_bgr(img):
+def gray_to_bgr(gray_img):
+	img = gray_img.copy()
 	return cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
 
 def show_binary(binary):
