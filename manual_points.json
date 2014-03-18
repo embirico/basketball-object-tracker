@@ -4,19 +4,23 @@
 		"points": [
 			{
 				"x": 50,
-				"y": 80
+				"y": 80,
+				"location": "sideline, freethrow"
 			},
 			{
 				"x": 50,
-				"y": 80
+				"y": 80,
+				"location": "sideline, baseline"
 			},
 			{
 				"x": 50,
-				"y": 80
+				"y": 80,
+				"location": "closepaint, freethrow"
 			},
 			{
 				"x": 50,
-				"y": 80
+				"y": 80,
+				"location": "closepaint, baseline"
 			}
 		]
 	}
