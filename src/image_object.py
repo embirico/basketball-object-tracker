@@ -2,11 +2,13 @@
 import cv2
 import numpy as np
 import pickle
+import itertools
 
 # Local imports
 import colors
 import top_line_detection as tld
 import hough
+from geometry import get_intersection
 
 
 class ImageObject():
@@ -104,11 +106,30 @@ class ImageObject():
 		return self._close_paintline
 
 
+	def get_quadrangle_points(self):
+		pts = []
+		pts.append(get_intersection(self.get_sideline(), self.get_freethrowline()))
+		pts.append(get_intersection(self.get_sideline(), self.get_baseline()))
+		pts.append(get_intersection(self.get_close_paintline(), self.get_freethrowline()))
+		pts.append(get_intersection(self.get_close_paintline(), self.get_baseline()))
+		return pts
+
+
 def testlines(img_obj, save_filename):
 	lines = [img_obj.get_freethrowline(), img_obj.get_close_paintline(),
 		img_obj.get_sideline(), img_obj.get_baseline()]
 	img = img_obj.get_bgr_img()
 	hough.put_lines_on_img(img, lines)
+	cv2.imwrite(save_filename, img)
+
+
+def testpoints(img_obj, save_filename):
+	lines = [img_obj.get_freethrowline(), img_obj.get_close_paintline(),
+		img_obj.get_sideline(), img_obj.get_baseline()]
+	img = img_obj.get_bgr_img()
+	hough.put_lines_on_img(img, lines)
+	points = img_obj.get_quadrangle_points()
+	hough.put_points_on_img(img, points)
 	cv2.imwrite(save_filename, img)
 
 
@@ -118,7 +139,7 @@ if __name__ == '__main__':
 	# gray_mask = pickle.load(open(pickle_name, 'r'))
 	# image_nums = [6584]
 	# image_nums = [5993]
-	image_nums = ['alex']
+	image_nums = ['5993']
 	# image_nums = [5993, 6233, 6373, 6584, 'alex']
 	for image_num in image_nums:
 		print image_num
@@ -127,6 +148,8 @@ if __name__ == '__main__':
 		save_filename = 'images/4lines{}.jpg'.format(image_num)
 		img_obj = ImageObject(image_name, save_name, verbose=True)
 		testlines(img_obj, save_filename)
+		save_filename = 'images/4points{}.jpg'.format(image_num)
+		testpoints(img_obj, save_filename)
 
 
 	# colors.show_image(img_obj.get_gray_flooded2())

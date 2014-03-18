@@ -25,6 +25,12 @@ def put_lines_on_img(bgr_img, lines_rho_theta):
     blue = blueness[i]
     cv2.line(bgr_img,(x1,y1),(x2,y2),(blue,0,red),2)
 
+
+def put_points_on_img(bgr_img, points):
+  for point in points:
+    cv2.circle(bgr_img, point, 8, colors.BGR_RED, -1)
+
+
 # Original get lines
 # def get_lines(gray, thresh=55):
 #   flooded = colors.fill_holes_with_contour_filling(gray, inverse=True)
