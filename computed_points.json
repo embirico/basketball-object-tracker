@@ -1,21 +1,20 @@
 {
-	"6584": [
-		{
+	"6584": {
+		"sideline, freethrow": {
 			"x": 243.87044,
-			"y": 318.75476,
-			"location": "sideline, freethrow"
-		}, {
+			"y": 318.75476
+		},
+		"sideline, baseline": {
 			"x": 634.22125,
-			"y": 277.72726,
-			"location": "sideline, baseline"
-		}, {
-			"x": 453.40762,
-			"y": 535.73682,
-			"location": "closepaint, freethrow"
-		}, {
+			"y": 277.72726
+		},
+		"closepaint, baseline": {
 			"x": 939.59656,
-			"y": 476.04034,
-			"location": "closepaint, baseline"
+			"y": 476.04034
+		},
+		"closepaint, freethrow": {
+			"x": 453.40762,
+			"y": 535.73682
 		}
-	]
+	}
 }

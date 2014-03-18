@@ -32,7 +32,9 @@ class ImageObject():
 
 
 	# You can pass a precomputed gray_mask if you want to save 5s
-	def __init__(self, image_name, save_name, gray_mask=None, verbose=False):
+	def __init__(self, image_name, save_name=None, gray_mask=None, verbose=False):
+		if verbose and save_name is None:
+			raise Exception('Need save_name for verbose mode')
 		self._bgr_img = cv2.imread(image_name)
 		self._gray_mask = gray_mask
 		self.verbose = verbose
@@ -113,8 +115,8 @@ class ImageObject():
 		pts = []
 		pts.append(get_intersection(self.get_sideline(), self.get_freethrowline()))
 		pts.append(get_intersection(self.get_sideline(), self.get_baseline()))
-		pts.append(get_intersection(self.get_close_paintline(), self.get_freethrowline()))
 		pts.append(get_intersection(self.get_close_paintline(), self.get_baseline()))
+		pts.append(get_intersection(self.get_close_paintline(), self.get_freethrowline()))
 		return pts
 
 
