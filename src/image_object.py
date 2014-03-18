@@ -32,7 +32,9 @@ class ImageObject():
 
 
 	# You can pass a precomputed gray_mask if you want to save 5s
-	def __init__(self, image_name, save_name, gray_mask=None, verbose=False):
+	def __init__(self, image_name, save_name=None, gray_mask=None, verbose=False):
+		if verbose and save_name is None:
+			raise Exception('Need save_name for verbose mode')
 		self._bgr_img = cv2.imread(image_name)
 		self._gray_mask = gray_mask
 		self.verbose = verbose
@@ -113,8 +115,8 @@ class ImageObject():
 		pts = []
 		pts.append(get_intersection(self.get_sideline(), self.get_freethrowline()))
 		pts.append(get_intersection(self.get_sideline(), self.get_baseline()))
-		pts.append(get_intersection(self.get_close_paintline(), self.get_freethrowline()))
 		pts.append(get_intersection(self.get_close_paintline(), self.get_baseline()))
+		pts.append(get_intersection(self.get_close_paintline(), self.get_freethrowline()))
 		return pts
 
 
@@ -132,6 +134,7 @@ def testpoints(img_obj, save_filename):
 	img = img_obj.get_bgr_img()
 	hough.put_lines_on_img(img, lines)
 	points = img_obj.get_quadrangle_points()
+	print points
 	hough.put_points_on_img(img, points)
 	cv2.imwrite(save_filename, img)
 
@@ -140,7 +143,7 @@ if __name__ == '__main__':
 	# image_name = 'images/5993.jpg'
 	# pickle_name = 'pickles/5993_gray_mask.pickle'
 	# gray_mask = pickle.load(open(pickle_name, 'r'))
-	image_nums = [6584]
+	image_nums = [5993]
 	# image_nums = ['gsw2']
 	# image_nums = [5993, 6233, 6373, 6584, 6691, 6882, 6006]
 	# image_nums = [5993, 6233, 6373, 6584, 'alex']
