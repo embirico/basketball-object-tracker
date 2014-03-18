@@ -12,30 +12,30 @@ from collections import deque
 CROWD_TOP_HEIGHT_FRACTION = .375;
 CROWD_BOTTOM_HEIGHT_FRACTION = .2;
 BGR_BLACK = (0,0,0)
+YCBCR_BLACK = (0,128,128)
+YCBCR_WHITE = (255,128,128)
+
 
 
 # Exported code ---------------------------------
 
-def create_court_mask(image_name, dominant_colorset=None, binary_gray=False):
-	if dominant_colorset is None:
-		dominant_colorset = get_dominant_colorset(image_name)
-
-	img = cv2.cvtColor(cv2.imread(image_name), cv2.COLOR_BGR2YCR_CB)
+def create_court_mask(_bgr_img, dominant_colorset, binary_gray=False):
+	img = cv2.cvtColor(_bgr_img, cv2.COLOR_BGR2YCR_CB)
 	for row in xrange(img.shape[0]):
 		for col in xrange(img.shape[1]):
 			idx = (row, col)
 			_, cr, cb = img[idx]
 			if (cr, cb) not in dominant_colorset:
-				img[idx] = (0,128,128)
+				img[idx] = YCBCR_BLACK
 			elif binary_gray:
-				img[idx] = (255,128,128)
+				img[idx] = YCBCR_WHITE
 
 	return ycbcr_to_gray(img) if binary_gray else img
 
-
-def get_dominant_colorset(image_name, thresh=0.02, ignore_crowd=True,
+#.02
+def get_dominant_colorset(_bgr_img, thresh=0.02, ignore_crowd=True,
 	peak_num=1):
-	img = cv2.cvtColor(cv2.imread(image_name), cv2.COLOR_BGR2YCR_CB)
+	img = cv2.cvtColor(_bgr_img, cv2.COLOR_BGR2YCR_CB)
 
 	if ignore_crowd:
 		img = img[CROWD_TOP_HEIGHT_FRACTION*img.shape[0] : -CROWD_BOTTOM_HEIGHT_FRACTION*img.shape[0]]
@@ -58,23 +58,27 @@ def get_dominant_colorset(image_name, thresh=0.02, ignore_crowd=True,
 	return connected_hist2
 
 
+# TODO Delete
+# def get_paint_mask(image_name):
+# 	court_colorset = get_dominant_colorset(image_name)
+# 	court_mask = create_court_mask(image_name, court_colorset, binary_gray=True)
+# 	court_mask = fill_holes_with_contour_filling(court_mask)
 
-def get_paint_mask(image_name):
-	court_colorset = get_dominant_colorset(image_name)
-	court_mask = create_court_mask(image_name, court_colorset, binary_gray=True)
-	court_mask = fill_holes_with_contour_filling(court_mask)
+# 	court_masked = cv2.imread(image_name)
+# 	for row in xrange(court_masked.shape[0]):
+# 		for col in xrange(court_masked.shape[1]):
+# 			if court_mask[row][col]:
+# 				court_masked[row][col] = BGR_BLACK
 
-	court_masked = cv2.imread(image_name)
-	for row in xrange(court_masked.shape[0]):
-		for col in xrange(court_masked.shape[1]):
-			if court_mask[row][col]:
-				court_masked[row][col] = BGR_BLACK
+# 	return court_masked
 
-	return court_masked
+def get_double_flooded_mask(gray_mask):
+	gray_flooded = fill_holes_with_contour_filling(gray_mask)
+	gray_flooded2 = fill_holes_with_contour_filling(gray_flooded, inverse=True)
+	return gray_flooded2
 
-
-def fill_holes_with_contour_filling(gray, inverse=False):
-  filled = gray.copy()
+def fill_holes_with_contour_filling(gray_mask, inverse=False):
+  filled = gray_mask.copy()
   if inverse:
   	filled = cv2.bitwise_not(filled)
   contour, _ = cv2.findContours(filled,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
@@ -135,24 +139,29 @@ def show_hist(hist_list):
 	plt.show()
 
 
-def ycbcr_to_bgr(img):
+def ycbcr_to_bgr(ycbcr_img):
+	img = ycbcr_img.copy()
 	return cv2.cvtColor(img, cv2.COLOR_YCR_CB2BGR)
 
 
-def ycbcr_to_gray(img):
+def ycbcr_to_gray(ycbcr_img):
+	img = ycbcr_img.copy()
 	img = ycbcr_to_bgr(img)
 	return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
 
-def ycbcr_to_binary(img):
+def ycbcr_to_binary(ycbcr_img):
+	img = ycbcr_img.copy()
 	return ycbcr_to_gray(img) > 128
 
 
-def binary_to_gray(img):
+def binary_to_gray(binary_img):
+	img = binary_img.copy()
 	return img * 255;
 
 
-def gray_to_bgr(img):
+def gray_to_bgr(gray_img):
+	img = gray_img.copy()
 	return cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
 
 def show_binary(binary):
