@@ -7,7 +7,7 @@ import pickle
 import colors
 import top_line_detection as tld
 import hough
-
+import find_intersection_hough_lines as fihl
 
 class ImageObject():
 	# Variables
@@ -56,6 +56,7 @@ class ImageObject():
 		if self.verbose: print 'get_dominant_colorset'
 		if self._dominant_colorset is None:
 			self._dominant_colorset = colors.get_dominant_colorset(self.get_bgr_img())
+		# colors.show_hist(self._dominant_colorset)
 		return self._dominant_colorset.copy()
 
 
@@ -64,7 +65,7 @@ class ImageObject():
 		if self._gray_flooded2 is None:
 			self._gray_flooded2 = \
 				colors.get_double_flooded_mask(self.get_gray_mask())
-		if self.verbose: cv2.imwrite(self.save_name + 'gray_flooeded2.jpg', self._gray_flooded2)
+		if self.verbose: cv2.imwrite(self.save_name + 'gray_flooded2.jpg', self._gray_flooded2)
 		return self._gray_flooded2.copy()
 
 
@@ -72,6 +73,9 @@ class ImageObject():
 		if self.verbose: print 'get_sideline'
 		if self._sideline is None:
 			lines = tld.find_top_boundary(self.get_gray_mask())
+			# img = colors.gray_to_bgr(self._gray_mask.copy())
+			# hough.put_lines_on_img(img, lines)
+			# cv2.imwrite('images/6584_toplines.jpg', img)
 			if len(lines) < 2:
 				raise Exception('ERROR: Did not find baseline')
 			self._sideline = lines[0]
@@ -107,7 +111,7 @@ class ImageObject():
 def testlines(img_obj, save_filename):
 	lines = [img_obj.get_freethrowline(), img_obj.get_close_paintline(),
 		img_obj.get_sideline(), img_obj.get_baseline()]
-	img = img_obj.get_bgr_img()
+	img = colors.gray_to_bgr(img_obj.get_gray_flooded2())
 	hough.put_lines_on_img(img, lines)
 	cv2.imwrite(save_filename, img)
 
@@ -116,16 +120,16 @@ if __name__ == '__main__':
 	# image_name = 'images/5993.jpg'
 	# pickle_name = 'pickles/5993_gray_mask.pickle'
 	# gray_mask = pickle.load(open(pickle_name, 'r'))
-	# image_nums = [6584]
-	# image_nums = [5993]
-	image_nums = ['alex']
+	image_nums = [6584]
+	# image_nums = ['gsw2']
+	# image_nums = [5993, 6233, 6373, 6584, 6691, 6882, 6006]
 	# image_nums = [5993, 6233, 6373, 6584, 'alex']
 	for image_num in image_nums:
 		print image_num
 		image_name = 'images/{}.jpg'.format(image_num)
 		save_name = 'images/{}'.format(image_num)
 		save_filename = 'images/4lines{}.jpg'.format(image_num)
-		img_obj = ImageObject(image_name, save_name, verbose=True)
+		img_obj = ImageObject(image_name, save_name, verbose=False)
 		testlines(img_obj, save_filename)
 
 
