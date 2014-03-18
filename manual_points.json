@@ -1,20 +1,20 @@
 {
 	"5993": [
 		{
-			"x": 50,
-			"y": 80,
+			"x": 246.3065,
+			"y": 310.8226,
 			"location": "sideline, freethrow"
 		}, {
-			"x": 50,
-			"y": 80,
+			"x": 645.0161, 
+			"y": 273.4032,
 			"location": "sideline, baseline"
 		}, {
-			"x": 50,
-			"y": 80,
+			"x": 456.629,
+			"y": 532.7581,
 			"location": "closepaint, freethrow"
 		}, {
-			"x": 50,
-			"y": 80,
+			"x": 943.0806,
+			"y": 469.5323,
 			"location": "closepaint, baseline"
 		}
 	]
