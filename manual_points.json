@@ -1,27 +1,21 @@
-[
-	{
-		"image_num": 5993,
-		"points": [
-			{
-				"x": 50,
-				"y": 80,
-				"location": "sideline, freethrow"
-			},
-			{
-				"x": 50,
-				"y": 80,
-				"location": "sideline, baseline"
-			},
-			{
-				"x": 50,
-				"y": 80,
-				"location": "closepaint, freethrow"
-			},
-			{
-				"x": 50,
-				"y": 80,
-				"location": "closepaint, baseline"
-			}
-		]
-	}
-]
+{
+	"5993": [
+		{
+			"x": 50,
+			"y": 80,
+			"location": "sideline, freethrow"
+		}, {
+			"x": 50,
+			"y": 80,
+			"location": "sideline, baseline"
+		}, {
+			"x": 50,
+			"y": 80,
+			"location": "closepaint, freethrow"
+		}, {
+			"x": 50,
+			"y": 80,
+			"location": "closepaint, baseline"
+		}
+	]
+}
