@@ -1,21 +1,105 @@
 {
-	"5993": [
-		{
+	"5993": {
+		"sideline, freethrow":{
 			"x": 246.3065,
-			"y": 310.8226,
-			"location": "sideline, freethrow"
-		}, {
-			"x": 645.0161, 
-			"y": 273.4032,
-			"location": "sideline, baseline"
-		}, {
-			"x": 456.629,
-			"y": 532.7581,
-			"location": "closepaint, freethrow"
-		}, {
-			"x": 943.0806,
-			"y": 469.5323,
-			"location": "closepaint, baseline"
+			"y": 310.8226
+		}, 
+		"sideline, baseline": {
+				"x": 645.0161,
+				"y": 273.4032
+		},
+		"closepaint, baseline": {
+				"x": 943.0806,
+				"y": 469.5323
+		},
+		"closepaint, freethrow": {
+				"x": 456.629,
+				"y": 532.7581
 		}
-	]
+	},
+	"6233": {
+		"sideline, freethrow": {
+			"x": 664.371,
+			"y": 296.629
+		}, "sideline, baseline": {
+			"x": 398.5645, 
+			"y": 285.0161
+		},
+		"closepaint, baseline": {
+				"x": 198.5645,
+				"y": 432.1129
+		},
+		"closepaint, freethrow": {
+				"x": 537.9194,
+				"y": 451.4677
+		}
+	},
+	"6373": {
+		"sideline, freethrow": {
+			"x": 766.3065,
+			"y": 278.5645
+		}, "sideline, baseline": {
+			"x": 424.371, 
+			"y": 260.5
+		},
+		"closepaint, baseline": {
+				"x": 166.3065,
+				"y": 446.3065
+		},
+		"closepaint, freethrow": {
+				"x": 603.7258,
+				"y": 477.2742
+		}
+	},
+	"6691": {
+		"sideline, freethrow": {
+			"x": 899.2097,
+			"y": 275.9839
+		}, "sideline, baseline": {
+			"x": 570.1774, 
+			"y": 251.4677
+		},
+		"closepaint, baseline": {
+				"x": 328.8871,
+				"y": 423.0806
+		},
+		"closepaint, freethrow": {
+				"x": 736.629,
+				"y": 463.0806
+		}
+	},
+	"6882": {
+		"sideline, freethrow": {
+			"x": 651.4677,
+			"y": 179.2097
+		}, "sideline, baseline": {
+			"x": 984.371, 
+			"y": 154.6935
+		},
+		"closepaint, baseline": {
+				"x": 1247.5968,
+				"y": 332.7581
+		},
+		"closepaint, freethrow": {
+				"x": 816.629,
+				"y": 366.3065
+		}
+	},
+	"6006": {
+		"sideline, freethrow": {
+			"x": 238.5645,
+			"y": 308.2419
+		}, "sideline, baseline": {
+			"x": 648.8871, 
+			"y": 265.6613
+		},
+		"closepaint, baseline": {
+				"x": 958.5645,
+				"y": 472.1129
+		},
+		"closepaint, freethrow": {
+				"x": 452.7581,
+				"y": 535.3387
+		}
+	}
 }
