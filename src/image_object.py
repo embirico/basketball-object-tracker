@@ -132,6 +132,7 @@ def testpoints(img_obj, save_filename):
 	img = img_obj.get_bgr_img()
 	hough.put_lines_on_img(img, lines)
 	points = img_obj.get_quadrangle_points()
+	print points
 	hough.put_points_on_img(img, points)
 	cv2.imwrite(save_filename, img)
 
@@ -140,7 +141,7 @@ if __name__ == '__main__':
 	# image_name = 'images/5993.jpg'
 	# pickle_name = 'pickles/5993_gray_mask.pickle'
 	# gray_mask = pickle.load(open(pickle_name, 'r'))
-	image_nums = [6584]
+	image_nums = [5993]
 	# image_nums = ['gsw2']
 	# image_nums = [5993, 6233, 6373, 6584, 6691, 6882, 6006]
 	# image_nums = [5993, 6233, 6373, 6584, 'alex']
