@@ -27,7 +27,8 @@ def put_lines_on_img(bgr_img, lines_rho_theta):
 
 
 def put_points_on_img(bgr_img, points):
-  for point in points:
+  for float_point in points:
+    point = tuple([int(x) for x in float_point])
     cv2.circle(bgr_img, point, 8, colors.BGR_RED, -1)
 
 

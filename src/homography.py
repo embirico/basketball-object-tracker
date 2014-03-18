@@ -3,9 +3,11 @@
 import image_object as IO
 import json
 import numpy as np
+import cv2
 
 
 # Local imports
+from image_object import ImageObject
 import hough
 
 
@@ -58,8 +60,8 @@ def compute_homography(image_pts):
 		x = image_pts[loc]['x']
 		y = image_pts[loc]['y']
 		xw, yw = NbaCourt.get_loc_coords(loc, 'right')
-		b[row] = xw
 		a[row,:] = [x, y, 1, 0, 0, 0, x*xw, y*xw]
+		b[row] = xw
 		row += 1
 		a[row,:] = [0, 0, 0, x, y, 1, x*yw, y*yw]
 		b[row] = yw
@@ -71,26 +73,37 @@ def compute_homography(image_pts):
 
 
 if __name__ == '__main__':
-	img_num_str = '6584'
+	img_num = 5993
+	img_num_str = str(img_num)
 	with open('manual_points.json', 'r') as f:
 		manual_pts = json.load(f)
 	with open('computed_points.json', 'r') as f:
 		computed_pts = json.load(f)
 
 	h = compute_homography(manual_pts[img_num_str])
+	print h
 
-	img_obj = ImageObject('images/{}.jpg'.format(image_num))
+	img_obj = ImageObject('images/{}.jpg'.format(img_num))
 
 	reprojected_pts = []
-	for loc in manual_pts:
+	for loc in manual_pts[img_num_str]:
+		print loc
 		xw, yw = NbaCourt.get_loc_coords(loc, 'right')
-		# do some shit with h
-		p = H * pw
 		print [[xw], [yw]]
-		p = np.dot(h, [[xw], [yw]])
+		# p = np.dot(h, [[xw], [yw], [1]])
+		p = np.dot(h, [xw, yw, 1])
+		p = p / p[2]
 		print p
 		reprojected_pts.append((p[0], p[1]))
 
 	img = img_obj.get_bgr_img()
 	hough.put_points_on_img(img, reprojected_pts)
-	cv2.imwrite('images/{}_reprojected.jpg'.format(image_num))
+
+
+
+	# temp = manual_pts[img_num_str]
+	# pts = [(temp[loc]['x'], temp[loc]['y']) for loc in temp]
+	# hough.put_points_on_img(img, pts)
+
+
+	cv2.imwrite('images/{}_reprojected.jpg'.format(img_num), img)

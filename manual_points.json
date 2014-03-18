@@ -3,7 +3,7 @@
 		"sideline, freethrow":{
 			"x": 246.3065,
 			"y": 310.8226
-		}, 
+		},
 		"sideline, baseline": {
 				"x": 645.0161,
 				"y": 273.4032
@@ -22,7 +22,7 @@
 			"x": 664.371,
 			"y": 296.629
 		}, "sideline, baseline": {
-			"x": 398.5645, 
+			"x": 398.5645,
 			"y": 285.0161
 		},
 		"closepaint, baseline": {
@@ -39,7 +39,7 @@
 			"x": 766.3065,
 			"y": 278.5645
 		}, "sideline, baseline": {
-			"x": 424.371, 
+			"x": 424.371,
 			"y": 260.5
 		},
 		"closepaint, baseline": {
@@ -56,7 +56,7 @@
 			"x": 899.2097,
 			"y": 275.9839
 		}, "sideline, baseline": {
-			"x": 570.1774, 
+			"x": 570.1774,
 			"y": 251.4677
 		},
 		"closepaint, baseline": {
@@ -73,7 +73,7 @@
 			"x": 651.4677,
 			"y": 179.2097
 		}, "sideline, baseline": {
-			"x": 984.371, 
+			"x": 984.371,
 			"y": 154.6935
 		},
 		"closepaint, baseline": {
@@ -90,7 +90,7 @@
 			"x": 238.5645,
 			"y": 308.2419
 		}, "sideline, baseline": {
-			"x": 648.8871, 
+			"x": 648.8871,
 			"y": 265.6613
 		},
 		"closepaint, baseline": {
