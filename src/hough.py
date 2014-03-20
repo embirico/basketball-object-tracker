@@ -26,10 +26,10 @@ def put_lines_on_img(bgr_img, lines_rho_theta):
     cv2.line(bgr_img,(x1,y1),(x2,y2),(blue,0,red),2)
 
 
-def put_points_on_img(bgr_img, points):
+def put_points_on_img(bgr_img, points, color=colors.BGR_RED):
   for float_point in points:
     point = tuple([int(x) for x in float_point])
-    cv2.circle(bgr_img, point, 8, colors.BGR_RED, -1)
+    cv2.circle(bgr_img, point, 8, color, -1)
 
 
 # Original get lines
@@ -65,8 +65,6 @@ def get_lines_from_paint(gray_flooded2, sideline, baseline, verbose=False):
 
   canny = cv2.Canny(gray_flooded2.copy(), 50, 200)
   padded_canny = np.zeros(canny.shape, np.uint8)
-  print canny[0,0]
-  print padded_canny[0,0]
   y_range_left = OFFSET_Y*canny.shape[0]
   y_range_right = 0.75*canny.shape[0]
   x_range_left = OFFSET_X*canny.shape[1]

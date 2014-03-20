@@ -1,4 +1,40 @@
 {
+	"test_left" : {
+		"sideline, freethrow":{
+			"x": 226,
+			"y": 0
+		},
+		"sideline, baseline": {
+				"x": 0,
+				"y": 0
+		},
+		"closepaint, baseline": {
+				"x": 0,
+				"y": 396
+		},
+		"closepaint, freethrow": {
+				"x": 226,
+				"y": 396
+		}
+	},
+	"test_offset_left" : {
+		"sideline, freethrow":{
+			"x": 326,
+			"y": 100
+		},
+		"sideline, baseline": {
+				"x": 100,
+				"y": 100
+		},
+		"closepaint, baseline": {
+				"x": 100,
+				"y": 496
+		},
+		"closepaint, freethrow": {
+				"x": 326,
+				"y": 496
+		}
+	},
 	"5993": {
 		"sideline, freethrow":{
 			"x": 246.3065,
