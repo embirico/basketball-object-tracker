@@ -104,7 +104,7 @@ if __name__ == '__main__':
 		p = p * p[2]
 		print data_img[loc]
 		print p
-		reprojected_pts.append((p[0], p[1]))
+		reprojected_pts.append((p[0][0], p[1][0]))
 
 	img = img_obj.get_bgr_img()
 	hough.put_points_on_img(img, manual_points, colors.BGR_BLUE)
@@ -118,3 +118,9 @@ if __name__ == '__main__':
 
 
 	cv2.imwrite('images/{}_reprojected.jpg'.format(img_num), img)
+
+	err = np.mean([np.linalg.norm(
+		np.asarray(manual_points[i]) - np.asarray(reprojected_pts[i]))
+		for i in xrange(len(manual_points))])
+
+	print 'Avg reprojection error: {}px'.format(err)
